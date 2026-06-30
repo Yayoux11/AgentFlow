@@ -26,12 +26,19 @@
 | 16 | **B7** — Reset mot de passe : SMTP service + 2 endpoints + 2 pages frontend + lien login | session 4 |
 | 17 | **B8** — Historique conversations par agent (endpoint + UI accordéon sur page agent) | session 4 |
 | 18 | **B9** — Export CSV (endpoint backend utf-8-sig) + PDF print via browser (zero dépendance) | session 5 |
-| 19 | **B13** — Landing page : refacto server/client + SEO metadata + sections How it works / Testimonials / FAQ | session 6 |
+| 19 | **B13** — Landing page : refacto server/client + SEO metadata + sections How it works / FAQ | session 6 |
 | 20 | **B14** — API publique + clés API : modèle ApiKey + router backend + page /settings/api-keys | session 6 |
 | 21 | **B15** — Mode dark : ThemeContext + CSS variables + dark: classes sur tous les composants principaux | session 6 |
-| 22 | **B16** — Internationalisation EN/FR : LanguageContext + translations.ts + switcher FR/EN dans la Navbar | session 6 |
-| 23 | **Dark mode complet** — dark: classes appliquées sur toutes les pages (dashboard, marketplace, agents, integrations, forgot/reset password, not-found, error, checkout) | session 7 |
-| 24 | **i18n complet** — useLang() + t() appliqués sur toutes les pages (register, forgot/reset password, not-found, error, checkout, dashboard, marketplace, agents/[id], api-keys, integrations) + timeAgo localisé | session 7 |
+| 22 | **B16** — Internationalisation EN/FR : LanguageContext + translations.ts | session 6 |
+| 23 | **Dark mode complet** — dark: classes appliquées sur toutes les pages | session 7 |
+| 24 | **i18n complet** — useLang() + t() appliqués sur toutes les pages + timeAgo localisé | session 7 |
+| 25 | **Fix hydration** — suppressHydrationWarning sur html/body (extension navigateur) | session 8 |
+| 26 | **PostgreSQL Render** — migration Alembic + connexion cloud + fix DATABASE_URL env group | session 8 |
+| 27 | **Déploiement Vercel** — frontend en prod, fix useSearchParams Suspense + TypeScript | session 8 |
+| 28 | **Google SSO prod** — BACKEND_URL dynamique + CORS FRONTEND_URL | session 8 |
+| 29 | **Langue auto-détectée** — navigator.language + localStorage, suppression switcher FR/EN | session 9 |
+| 30 | **Suppression faux contenus** — témoignages, "2400+ users / 4.8/5", notes agents | session 9 |
+| 31 | **Accès agents Starter** — sidebar 3 états (Pro / Starter / non-inscrit) + i18n | session 9 |
 
 ---
 
@@ -47,14 +54,14 @@ _(aucune tâche en cours)_
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
-| B1 | **Stripe — abonnements Pro + Enterprise** | Sans paiement, le SaaS ne génère aucun revenu |
-| B2 | **Clé API Anthropic dans .env** | Les agents IA ne fonctionnent pas sans elle |
+| B2 | **Clé API Anthropic dans .env Render** | Les agents IA ne fonctionnent pas sans elle |
 
 ### 🟠 Important (expérience utilisateur)
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
 | B4 | **Onboarding utilisateur** (wizard après inscription) | Taux d'activation faible sans guidage initial |
+| B17 | **Vérification email** (lien de confirmation après register) | Évite les faux comptes et améliore la délivrabilité |
 
 ### 🟡 Améliorations produit
 
@@ -62,38 +69,22 @@ _(aucune tâche en cours)_
 |---|-------|---------|
 | B10 | **Notifications in-app** (règles emails déclenchées, tâches terminées) | Feedback temps-réel |
 | B11 | **Plan Enterprise — multi-utilisateurs / équipes** | Vente B2B, ticket moyen plus élevé |
-| B12 | **Microsoft Outlook OAuth** (déjà architecturé, manque Azure app) | Complète l'intégration email |
-
-### 🟢 Nice-to-have
-
-| # | Tâche | Pourquoi |
-|---|-------|---------|
-| ~~B13~~ | ~~Landing page marketing~~ | ✅ Fait session 6 |
-| ~~B14~~ | ~~API publique + clés API~~ | ✅ Fait session 6 |
-| ~~B15~~ | ~~Mode dark~~ | ✅ Fait session 6 |
-| ~~B16~~ | ~~Internationalisation (i18n) EN/FR~~ | ✅ Fait session 6 |
+| B18 | **Webhook sortant configurable** | Permet aux utilisateurs d'intégrer AgentFlow dans leur propre stack |
+| B19 | **Playground agent** (test sans compte, 3 requêtes gratuites) | Réduit la friction à l'adoption |
 
 ---
 
-## 💡 Suggestions soumises ce jour — En attente de décision
+## 🔮 Futur (post-lancement)
 
-> Valider ou rejeter chaque point. Je commence dès validation.
+> À envisager une fois le SaaS stable et en production avec de vrais utilisateurs.
 
-### S1 — Stripe (B1) → Priorité absolue
-Connecter Stripe Checkout pour les plans Pro (19 €/mois) et Enterprise (79 €/mois).
-Inclut : webhook pour activer le plan après paiement, page de succès, gestion des annulations.
-
-### S2 — Onboarding en 3 étapes (B4)
-Après inscription, un wizard rapide : (1) connecter un agent, (2) tester un prompt, (3) optionnel connecter sa boîte mail.
-Augmente significativement le taux d'activation.
-
-### S3 — Dashboard analytics (B5)
-Ajouter sur le dashboard : nombre de requêtes par agent, tokens utilisés ce mois, activité récente.
-Rend le produit "collant" — l'utilisateur voit sa progression.
-
-### S4 — PostgreSQL en remplacement de SQLite (B3)
-Migration technique transparente pour l'utilisateur.
-Indispensable avant tout déploiement cloud (Railway, Render, Supabase).
+| # | Tâche | Pourquoi reporté |
+|---|-------|-----------------|
+| F1 | **Stripe — abonnements Pro + Enterprise** | Priorité post-lancement — nécessite compte Stripe et conformité |
+| F2 | **Microsoft Outlook OAuth** | Nécessite compte Azure + enregistrement app Microsoft |
+| F3 | **Apple SSO** | Nécessite compte Apple Developer (99 $/an) |
+| F4 | **Agents personnalisés** (création par l'utilisateur via UI) | Complexité élevée, valeur différenciante à moyen terme |
+| F5 | **Marketplace tiers** (agents créés par la communauté) | Requiert modération, système de paiement aux créateurs |
 
 ---
 
@@ -101,6 +92,8 @@ Indispensable avant tout déploiement cloud (Railway, Render, Supabase).
 
 | Décision | Choix | Date |
 |----------|-------|------|
-| SSO Microsoft | Reporté (pas de compte Azure) | session 2 |
-| Apple SSO | Reporté (pas de compte Apple Developer) | session 2 |
-| Stripe | En attente de validation | — |
+| SSO Microsoft | Reporté futur (pas de compte Azure) | session 2 |
+| Apple SSO | Reporté futur (pas de compte Apple Developer) | session 2 |
+| Stripe | Reporté futur (post-lancement) | session 9 |
+| Témoignages fictifs | Supprimés — à ajouter avec vrais utilisateurs | session 9 |
+| Notes/avis fictifs | Supprimés — à ajouter avec vrais utilisateurs | session 9 |

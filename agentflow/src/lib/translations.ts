@@ -13,6 +13,18 @@ const translations = {
     "nav.apikeys": "Clés API",
     "nav.logout": "Déconnexion",
     "nav.superadmin": "Superadmin",
+    "nav.verify_banner": "Vérifiez votre email pour activer votre compte.",
+    "nav.verify_resend": "Renvoyer l'email",
+    "nav.verify_sending": "Envoi…",
+    "nav.verify_sent": "Email envoyé !",
+
+    // ── Verify email ─────────────────────────────────────────────────────────
+    "verify.loading": "Vérification en cours…",
+    "verify.success_title": "Email vérifié !",
+    "verify.success_desc": "Votre compte est maintenant actif. Vous pouvez utiliser AgentFlow.",
+    "verify.error_title": "Lien invalide",
+    "verify.error_desc": "Ce lien est invalide ou a déjà été utilisé. Connectez-vous et renvoyez un nouveau lien.",
+    "verify.go_dashboard": "Aller au dashboard",
 
     // ── Hero ─────────────────────────────────────────────────────────────────
     "hero.badge": "+50 agents disponibles dès aujourd'hui",
@@ -404,6 +416,18 @@ const translations = {
     "nav.apikeys": "API Keys",
     "nav.logout": "Sign out",
     "nav.superadmin": "Superadmin",
+    "nav.verify_banner": "Please verify your email to activate your account.",
+    "nav.verify_resend": "Resend email",
+    "nav.verify_sending": "Sending…",
+    "nav.verify_sent": "Email sent!",
+
+    // ── Verify email ─────────────────────────────────────────────────────────
+    "verify.loading": "Verifying…",
+    "verify.success_title": "Email verified!",
+    "verify.success_desc": "Your account is now active. You can start using AgentFlow.",
+    "verify.error_title": "Invalid link",
+    "verify.error_desc": "This link is invalid or has already been used. Sign in and request a new one.",
+    "verify.go_dashboard": "Go to dashboard",
 
     // ── Hero ─────────────────────────────────────────────────────────────────
     "hero.badge": "+50 agents available today",

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key } from "lucide-react";
+import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key, Mail } from "lucide-react";
+import { api } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLang } from "@/context/LanguageContext";
@@ -11,10 +12,22 @@ import { useLang } from "@/context/LanguageContext";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
   const { user, loading, logout } = useAuth();
   const { theme, toggle: toggleTheme } = useTheme();
   const { t } = useLang();
   const router = useRouter();
+
+  async function handleResendVerification() {
+    setResending(true);
+    try {
+      await api.post("/auth/resend-verification", {});
+      setResent(true);
+    } finally {
+      setResending(false);
+    }
+  }
 
   const navLinks = [
     { href: "/marketplace", label: t("nav.marketplace") },
@@ -32,7 +45,27 @@ export default function Navbar() {
     ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
     : user?.email.slice(0, 2).toUpperCase();
 
+  const showVerificationBanner = !loading && user && !user.email_verified;
+
   return (
+    <>
+    {showVerificationBanner && (
+      <div className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-700 px-4 py-2.5 flex items-center justify-center gap-3 text-sm text-amber-800 dark:text-amber-300">
+        <Mail size={15} className="flex-shrink-0" />
+        <span>{t("nav.verify_banner")}</span>
+        {resent ? (
+          <span className="font-semibold text-emerald-700 dark:text-emerald-400">{t("nav.verify_sent")}</span>
+        ) : (
+          <button
+            onClick={handleResendVerification}
+            disabled={resending}
+            className="font-semibold underline hover:no-underline disabled:opacity-50"
+          >
+            {resending ? t("nav.verify_sending") : t("nav.verify_resend")}
+          </button>
+        )}
+      </div>
+    )}
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -164,5 +197,6 @@ export default function Navbar() {
         </div>
       )}
     </header>
+    </>
   );
 }

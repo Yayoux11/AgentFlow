@@ -17,7 +17,7 @@ from app.schemas import (
     ForgotPasswordRequest, LoginRequest, MessageResponse, RefreshRequest,
     RegisterRequest, ResetPasswordRequest, TokenResponse, UserOut,
 )
-from app.services.email_service import send_reset_password_email
+from app.services.email_service import send_reset_password_email, send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -29,23 +29,26 @@ GOOGLE_SSO_SCOPES = "openid email profile"
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(body: RegisterRequest, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.email == body.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    verification_token = secrets.token_urlsafe(48)
     user = User(
         email=body.email,
         hashed_password=hash_password(body.password),
         full_name=body.full_name,
+        email_verification_token=verification_token,
     )
     db.add(user)
-    await db.flush()  # get user.id
+    await db.flush()
 
-    # Auto-create free starter subscription
-    sub = Subscription(user_id=user.id, plan="starter", status="active")
-    db.add(sub)
+    db.add(Subscription(user_id=user.id, plan="starter", status="active"))
     await db.commit()
+
+    verify_url = f"{settings.FRONTEND_URL}/verify-email?token={verification_token}"
+    background_tasks.add_task(send_verification_email, user.email, verify_url, user.full_name)
 
     return TokenResponse(
         access_token=create_access_token(str(user.id)),
@@ -153,7 +156,8 @@ async def google_sso_callback(
         user = User(
             email=email,
             full_name=full_name,
-            hashed_password=hash_password(secrets.token_urlsafe(32)),  # random unusable password
+            hashed_password=hash_password(secrets.token_urlsafe(32)),
+            email_verified=True,  # Google already verified the email
         )
         db.add(user)
         await db.flush()
@@ -168,6 +172,40 @@ async def google_sso_callback(
     # Redirect to frontend callback page with tokens
     params = urllib.parse.urlencode({"access_token": access_token, "refresh_token": refresh_token})
     return RedirectResponse(f"{settings.FRONTEND_URL}/auth/callback?{params}")
+
+
+# ---------------------------------------------------------------------------
+# Email verification (B17)
+# ---------------------------------------------------------------------------
+
+@router.get("/verify-email", response_model=MessageResponse)
+async def verify_email(token: str = Query(...), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email_verification_token == token))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=400, detail="Lien de vérification invalide ou expiré.")
+    if user.email_verified:
+        return MessageResponse(message="Email déjà vérifié.")
+    user.email_verified = True
+    user.email_verification_token = None
+    await db.commit()
+    return MessageResponse(message="Email vérifié avec succès.")
+
+
+@router.post("/resend-verification", response_model=MessageResponse)
+async def resend_verification(
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if current_user.email_verified:
+        return MessageResponse(message="Email déjà vérifié.")
+    token = secrets.token_urlsafe(48)
+    current_user.email_verification_token = token
+    await db.commit()
+    verify_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
+    background_tasks.add_task(send_verification_email, current_user.email, verify_url, current_user.full_name)
+    return MessageResponse(message="Email de vérification renvoyé.")
 
 
 # ---------------------------------------------------------------------------

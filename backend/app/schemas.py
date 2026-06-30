@@ -42,6 +42,7 @@ class UserOut(BaseModel):
     full_name: Optional[str]
     is_superuser: bool
     is_active: bool
+    email_verified: bool
     created_at: datetime
 
 

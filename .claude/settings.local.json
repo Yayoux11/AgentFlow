@@ -12,7 +12,9 @@
       "PowerShell(python \"C:\\\\Users\\\\yayad\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-yayad-SaaS-A-r-gent\\\\3ce8e08b-d2ab-4dec-aebe-c1f0e06ca5c6\\\\scratchpad\\\\make_superuser.py\")",
       "PowerShell(python -c \"import asyncio, aiosqlite; DB=r'C:\\\\Users\\\\yayad\\\\SaaS_A\\(r\\)gent\\\\backend\\\\agentflow.db'; asyncio.run\\(\\(lambda: aiosqlite.connect\\(DB\\)\\).__call__\\(\\)\\)\")",
       "Bash(python3 -c \"import json,sys; agents=json.load\\(sys.stdin\\); print\\(f'{len\\(agents\\)} agents'\\); [print\\(f'  - {a[\\\\\"name\\\\\"]} \\({a[\\\\\"slug\\\\\"]}\\)'\\) for a in agents]\")",
-      "PowerShell(New-Item *)"
+      "PowerShell(New-Item *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

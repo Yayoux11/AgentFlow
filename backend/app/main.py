@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    env_raw = os.environ.get("DATABASE_URL", "NOT_SET")
     db_host = settings.DATABASE_URL.split("@")[-1] if "@" in settings.DATABASE_URL else settings.DATABASE_URL
+    logger.warning(f"os.environ DATABASE_URL present: {env_raw != 'NOT_SET'}")
     logger.warning(f"Connecting to database at: {db_host}")
     try:
         async with engine.begin() as conn:

@@ -1,8 +1,15 @@
+import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/agentflow"
     SECRET_KEY: str = "dev-secret-key-change-in-production"
@@ -51,3 +58,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Safety net: if pydantic-settings missed the env var, override directly from os.environ
+if _env_db := os.environ.get("DATABASE_URL"):
+    settings.DATABASE_URL = _env_db

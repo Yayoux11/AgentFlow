@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Mail, Plug, Trash2, Plus, Play, Pause, CheckCircle,
@@ -228,11 +228,21 @@ function RuleModal({
   );
 }
 
+function SearchParamsHandler({ onToast, t }: { onToast: (msg: string) => void; t: (k: string) => string }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const connected = searchParams.get("connected");
+    const error = searchParams.get("error");
+    if (connected) onToast(`${PROVIDER_LABELS[connected] ?? connected} ${t("intg.connected_success")}`);
+    if (error) onToast(`${t("intg.oauth_error")} ${error}`);
+  }, [searchParams, onToast, t]);
+  return null;
+}
+
 export default function IntegrationsPage() {
   const { user, loading: authLoading } = useAuth();
   const { t } = useLang();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [rules, setRules] = useState<Record<string, Rule[]>>({});
@@ -252,17 +262,14 @@ export default function IntegrationsPage() {
     send: t("intg.action.send"),
   };
 
+  const handleToast = useCallback((msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 4000);
+  }, []);
+
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    const connected = searchParams.get("connected");
-    const error = searchParams.get("error");
-    if (connected) setToast(`${PROVIDER_LABELS[connected] ?? connected} ${t("intg.connected_success")}`);
-    if (error) setToast(`${t("intg.oauth_error")} ${error}`);
-    if (connected || error) setTimeout(() => setToast(""), 4000);
-  }, [searchParams, t]);
 
   const loadData = useCallback(async () => {
     try {
@@ -323,6 +330,9 @@ export default function IntegrationsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <Suspense fallback={null}>
+        <SearchParamsHandler onToast={handleToast} t={t} />
+      </Suspense>
       {/* Toast */}
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-sm px-5 py-3 rounded-xl shadow-lg flex items-center gap-2">

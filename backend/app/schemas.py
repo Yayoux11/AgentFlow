@@ -274,6 +274,29 @@ class ResetPasswordRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# API Keys (B14)
+# ---------------------------------------------------------------------------
+
+class ApiKeyCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+
+
+class ApiKeyOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    name: str
+    key_prefix: str
+    is_active: bool
+    last_used_at: Optional[datetime]
+    created_at: datetime
+
+
+class ApiKeyCreatedOut(ApiKeyOut):
+    full_key: str
+
+
+# ---------------------------------------------------------------------------
 # Generic
 # ---------------------------------------------------------------------------
 

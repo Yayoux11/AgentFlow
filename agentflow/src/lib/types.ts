@@ -58,3 +58,16 @@ export interface TokenResponse {
   refresh_token: string;
   token_type: string;
 }
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  key_prefix: string;
+  is_active: boolean;
+  last_used_at: string | null;
+  created_at: string;
+}
+
+export interface ApiKeyCreated extends ApiKey {
+  full_key: string;
+}

@@ -3,25 +3,25 @@ import { Zap } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-100 bg-slate-50">
+    <footer className="border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg text-slate-900 mb-3">
+            <Link href="/" className="flex items-center gap-2 font-bold text-lg text-slate-900 dark:text-white mb-3">
               <span className="bg-indigo-600 text-white rounded-lg p-1.5">
                 <Zap size={16} strokeWidth={2.5} />
               </span>
               AgentFlow
             </Link>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              La plateforme SaaS d'agents IA pour automatiser votre activité.
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              La plateforme SaaS d&apos;agents IA pour automatiser votre activité.
             </p>
           </div>
 
           {/* Produit */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Produit</h3>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Produit</h3>
             <ul className="space-y-2">
               {[
                 { href: "/marketplace", label: "Marketplace" },
@@ -30,7 +30,7 @@ export default function Footer() {
                 { href: "/dashboard", label: "Dashboard" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                  <Link href={l.href} className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -40,13 +40,24 @@ export default function Footer() {
 
           {/* Ressources */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Ressources</h3>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Ressources</h3>
             <ul className="space-y-2">
-              {["Documentation", "API", "Changelog", "Status"].map((l) => (
-                <li key={l}>
-                  <span className="text-sm text-slate-500 cursor-pointer hover:text-slate-900 transition-colors">
-                    {l}
-                  </span>
+              {[
+                { href: "/settings/api-keys", label: "API" },
+                { label: "Documentation" },
+                { label: "Changelog" },
+                { label: "Status" },
+              ].map((l) => (
+                <li key={l.label}>
+                  {l.href ? (
+                    <Link href={l.href} className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <span className="text-sm text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-900 dark:hover:text-white transition-colors">
+                      {l.label}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -54,11 +65,11 @@ export default function Footer() {
 
           {/* Entreprise */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Entreprise</h3>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Entreprise</h3>
             <ul className="space-y-2">
               {["À propos", "Blog", "Partenaires", "Contact"].map((l) => (
                 <li key={l}>
-                  <span className="text-sm text-slate-500 cursor-pointer hover:text-slate-900 transition-colors">
+                  <span className="text-sm text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-900 dark:hover:text-white transition-colors">
                     {l}
                   </span>
                 </li>
@@ -67,11 +78,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-400">© 2026 AgentFlow. Tous droits réservés.</p>
+        <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-slate-400 dark:text-slate-500">© 2026 AgentFlow. Tous droits réservés.</p>
           <div className="flex gap-6">
             {["Confidentialité", "CGU", "Cookies"].map((l) => (
-              <span key={l} className="text-xs text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">
+              <span key={l} className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors">
                 {l}
               </span>
             ))}

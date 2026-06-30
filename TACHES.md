@@ -26,6 +26,12 @@
 | 16 | **B7** — Reset mot de passe : SMTP service + 2 endpoints + 2 pages frontend + lien login | session 4 |
 | 17 | **B8** — Historique conversations par agent (endpoint + UI accordéon sur page agent) | session 4 |
 | 18 | **B9** — Export CSV (endpoint backend utf-8-sig) + PDF print via browser (zero dépendance) | session 5 |
+| 19 | **B13** — Landing page : refacto server/client + SEO metadata + sections How it works / Testimonials / FAQ | session 6 |
+| 20 | **B14** — API publique + clés API : modèle ApiKey + router backend + page /settings/api-keys | session 6 |
+| 21 | **B15** — Mode dark : ThemeContext + CSS variables + dark: classes sur tous les composants principaux | session 6 |
+| 22 | **B16** — Internationalisation EN/FR : LanguageContext + translations.ts + switcher FR/EN dans la Navbar | session 6 |
+| 23 | **Dark mode complet** — dark: classes appliquées sur toutes les pages (dashboard, marketplace, agents, integrations, forgot/reset password, not-found, error, checkout) | session 7 |
+| 24 | **i18n complet** — useLang() + t() appliqués sur toutes les pages (register, forgot/reset password, not-found, error, checkout, dashboard, marketplace, agents/[id], api-keys, integrations) + timeAgo localisé | session 7 |
 
 ---
 
@@ -62,10 +68,10 @@ _(aucune tâche en cours)_
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
-| B13 | **Landing page marketing** (SEO, CTA, pricing public) | Acquisition organique |
-| B14 | **API publique + clés API pour les développeurs** | Ouvre un canal B2B2D |
-| B15 | **Mode dark** | Demande fréquente |
-| B16 | **Internationalisation (i18n)** EN/FR | Marché international |
+| ~~B13~~ | ~~Landing page marketing~~ | ✅ Fait session 6 |
+| ~~B14~~ | ~~API publique + clés API~~ | ✅ Fait session 6 |
+| ~~B15~~ | ~~Mode dark~~ | ✅ Fait session 6 |
+| ~~B16~~ | ~~Internationalisation (i18n) EN/FR~~ | ✅ Fait session 6 |
 
 ---
 

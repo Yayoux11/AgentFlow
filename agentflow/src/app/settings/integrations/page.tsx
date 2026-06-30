@@ -9,6 +9,7 @@ import {
 import { api, ApiError } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LanguageContext";
+import type { TranslationKey } from "@/lib/translations";
 
 interface Integration {
   id: string;
@@ -228,7 +229,7 @@ function RuleModal({
   );
 }
 
-function SearchParamsHandler({ onToast, t }: { onToast: (msg: string) => void; t: (k: string) => string }) {
+function SearchParamsHandler({ onToast, t }: { onToast: (msg: string) => void; t: (k: TranslationKey) => string }) {
   const searchParams = useSearchParams();
   useEffect(() => {
     const connected = searchParams.get("connected");

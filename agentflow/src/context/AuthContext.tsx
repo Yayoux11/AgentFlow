@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("af_access") : null;
+    const token = localStorage.getItem("af_access");
     if (token) {
       refreshUser().finally(() => setLoading(false));
     } else {

@@ -1,3 +1,5 @@
+import ssl
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
@@ -6,17 +8,26 @@ from app.config import settings
 
 _is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
-engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.ENVIRONMENT == "development",
-    **({
+if _is_sqlite:
+    _engine_kwargs = {
         "poolclass": NullPool,
         "connect_args": {"check_same_thread": False},
-    } if _is_sqlite else {
+    }
+else:
+    _ssl_ctx = ssl.create_default_context()
+    _ssl_ctx.check_hostname = False
+    _ssl_ctx.verify_mode = ssl.CERT_NONE
+    _engine_kwargs = {
         "pool_pre_ping": True,
         "pool_size": 10,
         "max_overflow": 20,
-    }),
+        "connect_args": {"ssl": _ssl_ctx},
+    }
+
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    echo=settings.ENVIRONMENT == "development",
+    **_engine_kwargs,
 )
 
 AsyncSessionLocal = async_sessionmaker(

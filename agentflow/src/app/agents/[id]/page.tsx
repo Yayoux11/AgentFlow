@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Check, Zap, BarChart3,
-  ShoppingCart, Send, Loader2, AlertCircle, Lock,
+  Send, Loader2, AlertCircle, Lock,
   BookOpen, ChevronRight, History, ChevronDown,
   Download, Printer,
 } from "lucide-react";
@@ -31,9 +31,6 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
   const [result, setResult] = useState<AgentRunResponse | null>(null);
   const [runError, setRunError] = useState("");
 
-  // Stripe checkout state
-  const [subscribing, setSubscribing] = useState(false);
-  const [subError, setSubError] = useState("");
   const [subscription, setSubscription] = useState<{ plan: string } | null>(null);
 
   // History
@@ -153,18 +150,7 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
     setTimeout(() => { win.print(); }, 400);
   }
 
-  async function handleSubscribe(plan: "pro" | "enterprise") {
-    if (!user) { router.push("/login"); return; }
-    setSubscribing(true);
-    setSubError("");
-    try {
-      const res = await api.post<{ checkout_url: string }>("/subscriptions/create-checkout", { plan });
-      window.location.href = res.checkout_url;
-    } catch (err) {
-      setSubError(err instanceof ApiError ? err.message : "Erreur Stripe");
-      setSubscribing(false);
-    }
-  }
+
 
   if (fetching) {
     return (
@@ -471,7 +457,7 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-4">
               <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-                {user && (user.is_superuser || subscription?.plan === "enterprise" || subscription?.plan === "pro") ? (
+                {user && (user.is_superuser || subscription?.plan === "pro" || subscription?.plan === "enterprise") ? (
                   <>
                     <div className="flex items-center gap-2 mb-4">
                       <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -502,53 +488,45 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
                       ))}
                     </ul>
                   </>
+                ) : user && subscription?.plan === "starter" ? (
+                  <>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Check size={16} className="text-indigo-600" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{t("agent.sidebar.access")}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Plan Starter</p>
+                      </div>
+                    </div>
+                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl px-4 py-3 mb-4">
+                      <p className="text-xs text-indigo-700 dark:text-indigo-400 font-medium">
+                        {t("agent.sidebar.starter_limit")}
+                      </p>
+                    </div>
+                    <Link
+                      href="/#pricing"
+                      className="block w-full text-center py-2.5 px-4 rounded-xl border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+                    >
+                      {t("agent.sidebar.upgrade_pro")}
+                    </Link>
+                  </>
                 ) : (
                   <>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t("agent.sidebar.monthly")}</p>
-                    <div className="flex items-end gap-1 mb-5">
-                      <span className="text-4xl font-extrabold text-slate-900 dark:text-white">{agent.price_monthly}€</span>
-                      <span className="text-slate-400 dark:text-slate-500 text-sm mb-1.5">{t("agent.sidebar.per_month")}</span>
-                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">{t("agent.sidebar.no_sub")}</p>
 
-                    {subError && (
-                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-2 rounded-lg mb-3">
-                        {subError}
-                      </div>
-                    )}
-
-                    <button
-                      onClick={() => handleSubscribe("pro")}
-                      disabled={subscribing}
-                      className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors mb-3 disabled:opacity-60 text-sm flex items-center justify-center gap-2"
+                    <Link
+                      href="/register"
+                      className="block w-full text-center bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors mb-3 text-sm"
                     >
-                      {subscribing && <Loader2 size={15} className="animate-spin" />}
-                      {t("agent.sidebar.subscribe")}
-                    </button>
-
-                    <div className="border-t border-slate-100 dark:border-slate-700 pt-4 mt-4">
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 font-medium">{t("agent.sidebar.or_buy")}</p>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-slate-600 dark:text-slate-300">{t("agent.sidebar.permanent")}</span>
-                        <span className="text-sm font-bold text-slate-900 dark:text-white">{agent.price_onetime}€</span>
-                      </div>
-                      <button className="w-full flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl text-sm font-medium hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
-                        <ShoppingCart size={16} />
-                        {t("agent.sidebar.buy")}
-                      </button>
-                    </div>
-
-                    <ul className="mt-5 space-y-2.5">
-                      {[
-                        t("agent.sidebar.trial"),
-                        t("agent.sidebar.no_commitment"),
-                        t("agent.sidebar.cancel"),
-                        t("agent.sidebar.support"),
-                      ].map((item) => (
-                        <li key={item} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                          <Check size={13} className="text-indigo-500" strokeWidth={2.5} /> {item}
-                        </li>
-                      ))}
-                    </ul>
+                      {t("agent.sidebar.start_free")}
+                    </Link>
+                    <Link
+                      href="/#pricing"
+                      className="block w-full text-center border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      {t("agent.sidebar.see_plans")}
+                    </Link>
                   </>
                 )}
               </div>

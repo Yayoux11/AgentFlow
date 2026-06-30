@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_host = settings.DATABASE_URL.split("@")[-1] if "@" in settings.DATABASE_URL else settings.DATABASE_URL
-    logger.info(f"Connecting to database at: {db_host}")
+    logger.warning(f"Connecting to database at: {db_host}")
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

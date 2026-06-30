@@ -1,5 +1,3 @@
-import ssl
-
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
@@ -14,14 +12,10 @@ if _is_sqlite:
         "connect_args": {"check_same_thread": False},
     }
 else:
-    _ssl_ctx = ssl.create_default_context()
-    _ssl_ctx.check_hostname = False
-    _ssl_ctx.verify_mode = ssl.CERT_NONE
     _engine_kwargs = {
         "pool_pre_ping": True,
-        "pool_size": 10,
-        "max_overflow": 20,
-        "connect_args": {"ssl": _ssl_ctx},
+        "pool_size": 5,
+        "max_overflow": 10,
     }
 
 engine = create_async_engine(

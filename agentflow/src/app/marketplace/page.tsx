@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Star, SlidersHorizontal, ArrowRight, Check } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowRight, Check } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
 import type { Agent, Subscription } from "@/lib/types";
@@ -13,7 +13,7 @@ const CATEGORIES = [
   "RH", "Support client", "Développement", "Analyse de données",
 ];
 
-type SortKey = "popular" | "price-asc" | "price-desc" | "rating";
+type SortKey = "popular" | "price-asc" | "price-desc";
 
 export default function MarketplacePage() {
   const { user } = useAuth();
@@ -55,8 +55,7 @@ export default function MarketplacePage() {
     .sort((a, b) => {
       if (sortBy === "price-asc") return a.price_monthly - b.price_monthly;
       if (sortBy === "price-desc") return b.price_monthly - a.price_monthly;
-      if (sortBy === "rating") return b.rating - a.rating;
-      return b.reviews_count - a.reviews_count;
+      return 0;
     });
 
   const countLabel = filtered.length === 1
@@ -91,7 +90,6 @@ export default function MarketplacePage() {
                 className="pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
               >
                 <option value="popular">{t("mkt.sort.popular")}</option>
-                <option value="rating">{t("mkt.sort.rating")}</option>
                 <option value="price-asc">{t("mkt.sort.price_asc")}</option>
                 <option value="price-desc">{t("mkt.sort.price_desc")}</option>
               </select>
@@ -156,11 +154,6 @@ export default function MarketplacePage() {
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-3">
                         <div className="text-3xl">{agent.icon}</div>
-                        {agent.reviews_count > 200 && (
-                          <span className="text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800 font-medium px-2 py-0.5 rounded-full">
-                            {t("mkt.popular_badge")}
-                          </span>
-                        )}
                       </div>
                       <h3 className="font-semibold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors">
                         {agent.name}
@@ -174,11 +167,6 @@ export default function MarketplacePage() {
                             {tag}
                           </span>
                         ))}
-                      </div>
-                      <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <Star size={12} className="fill-amber-400 text-amber-400" />
-                        <span className="font-medium text-slate-700 dark:text-slate-300">{agent.rating}</span>
-                        <span>({agent.reviews_count} {t("mkt.reviews")})</span>
                       </div>
                     </div>
                     <div className="px-6 pb-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4">

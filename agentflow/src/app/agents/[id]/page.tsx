@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, Check, Star, Zap, Users, BarChart3,
+  ArrowLeft, Check, Zap, BarChart3,
   ShoppingCart, Send, Loader2, AlertCircle, Lock,
   BookOpen, ChevronRight, History, ChevronDown,
   Download, Printer,
@@ -210,26 +210,12 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
               <div>
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{agent.name}</h1>
-                  {agent.reviews_count > 200 && (
-                    <span className="text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800 font-medium px-2 py-0.5 rounded-full">
-                      {t("agent.popular")}
-                    </span>
-                  )}
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">{agent.category}</p>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} size={14} className={i <= Math.round(agent.rating) ? "fill-amber-400 text-amber-400" : "text-slate-200 dark:text-slate-600 fill-slate-200 dark:fill-slate-600"} />
-                    ))}
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white ml-1">{agent.rating}</span>
-                  </div>
-                  <span className="text-sm text-slate-400 dark:text-slate-500">{agent.reviews_count} {t("agent.reviews")}</span>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {agent.tags.map((tag) => (
-                      <span key={tag} className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md">{tag}</span>
-                    ))}
-                  </div>
+                <div className="flex gap-1.5 flex-wrap">
+                  {agent.tags.map((tag) => (
+                    <span key={tag} className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md">{tag}</span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -258,10 +244,9 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
             {/* Stats */}
             <section className="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-5">{t("agent.stats")}</h2>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {[
                   { icon: <Zap size={18} className="text-indigo-600" />, value: "<2s", label: t("agent.response_time") },
-                  { icon: <Users size={18} className="text-indigo-600" />, value: `${agent.reviews_count}+`, label: t("agent.active_users") },
                   { icon: <BarChart3 size={18} className="text-indigo-600" />, value: "99.9%", label: t("agent.availability") },
                 ].map((s) => (
                   <div key={s.label} className="text-center">
@@ -590,11 +575,7 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
                   <div className="text-2xl mb-3">{rel.icon}</div>
                   <h3 className="font-semibold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors text-sm">{rel.name}</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">{rel.description}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <Star size={11} className="fill-amber-400 text-amber-400" />
-                      <span>{rel.rating}</span>
-                    </div>
+                  <div className="flex items-center justify-end">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">{rel.price_monthly}€{t("mkt.per_month")}</span>
                   </div>
                 </Link>

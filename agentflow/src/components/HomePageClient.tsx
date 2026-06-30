@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight, Check, Star, Zap, Shield, BarChart3, Users, Clock, Globe,
+  ArrowRight, Check, Zap, Shield, BarChart3, Users, Clock, Globe,
   ChevronDown, ChevronUp,
 } from "lucide-react";
 import { agents } from "@/lib/agents-data";
@@ -13,30 +13,6 @@ import { api } from "@/lib/api-client";
 import type { Subscription } from "@/lib/types";
 
 const popularAgents = agents.filter((a) => a.popular).slice(0, 4);
-
-const testimonials = [
-  {
-    name: "Sophie M.",
-    role: "Directrice marketing, Lyon",
-    avatar: "SM",
-    content: "J'ai automatisé 80% de mes tâches de rédaction avec l'agent Email Writer. Je gagne 3h par jour.",
-    rating: 5,
-  },
-  {
-    name: "Thomas R.",
-    role: "Développeur indépendant, Paris",
-    avatar: "TR",
-    content: "L'API est propre, la doc excellente. J'ai intégré 4 agents dans mon SaaS en moins d'une journée.",
-    rating: 5,
-  },
-  {
-    name: "Camille D.",
-    role: "CEO, startup e-commerce",
-    avatar: "CD",
-    content: "Le plan Pro se rentabilise en une semaine. Les analytics me montrent exactement où l'IA fait la différence.",
-    rating: 5,
-  },
-];
 
 export default function HomePageClient() {
   const { user } = useAuth();
@@ -149,22 +125,6 @@ export default function HomePageClient() {
             )}
           </div>
 
-          <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {[1,2,3,4,5].map((i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 border-2 border-white dark:border-slate-900 -ml-1.5 first:ml-0" />
-                ))}
-              </div>
-              <span><strong className="text-slate-900 dark:text-white">2 400+</strong> {t("hero.users")}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map((i) => (
-                <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
-              ))}
-              <span className="ml-1"><strong className="text-slate-900 dark:text-white">4.8/5</strong> {t("hero.rating")}</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -192,12 +152,6 @@ export default function HomePageClient() {
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors">{agent.name}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed line-clamp-2">{agent.description}</p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                    <Star size={12} className="fill-amber-400 text-amber-400" />
-                    <span>{agent.rating}</span>
-                    <span className="text-slate-300 dark:text-slate-600">·</span>
-                    <span>{agent.reviews} avis</span>
-                  </div>
                   {hasFullAccess ? (
                     <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
                       <Check size={12} strokeWidth={2.5} /> {t("badge.included")}
@@ -257,37 +211,6 @@ export default function HomePageClient() {
                 </div>
                 <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{f.title}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{f.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2">{t("section.testimonials")}</p>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{t("section.testimonials_title")}</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testi) => (
-              <div key={testi.name} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                <div className="flex items-center gap-1 mb-4">
-                  {[1,2,3,4,5].map((i) => (
-                    <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-5">&quot;{testi.content}&quot;</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">
-                    {testi.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{testi.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{testi.role}</p>
-                  </div>
-                </div>
               </div>
             ))}
           </div>

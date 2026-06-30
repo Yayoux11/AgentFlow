@@ -24,7 +24,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 GOOGLE_SSO_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_SSO_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_SSO_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
-GOOGLE_SSO_REDIRECT = "http://localhost:8000/auth/google/callback"
+GOOGLE_SSO_REDIRECT = f"{settings.BACKEND_URL}/auth/google/callback"
 GOOGLE_SSO_SCOPES = "openid email profile"
 
 

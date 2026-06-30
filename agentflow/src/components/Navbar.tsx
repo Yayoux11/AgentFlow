@@ -13,7 +13,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, loading, logout } = useAuth();
   const { theme, toggle: toggleTheme } = useTheme();
-  const { lang, setLang, t } = useLang();
+  const { t } = useLang();
   const router = useRouter();
 
   const navLinks = [
@@ -59,30 +59,6 @@ export default function Navbar() {
 
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Language switcher */}
-            <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5">
-              <button
-                onClick={() => setLang("fr")}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
-                  lang === "fr"
-                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
-              >
-                FR
-              </button>
-              <button
-                onClick={() => setLang("en")}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
-                  lang === "en"
-                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
@@ -170,14 +146,11 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="flex gap-2 pt-1">
-            <button onClick={() => setLang("fr")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${lang === "fr" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>FR</button>
-            <button onClick={() => setLang("en")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${lang === "en" ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>EN</button>
-          </div>
           <div className="pt-2 flex flex-col gap-2 border-t border-slate-100 dark:border-slate-800">
             {user ? (
               <>
                 <Link href="/dashboard" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" onClick={() => setMenuOpen(false)}>{t("nav.dashboard")}</Link>
+                <Link href="/settings/integrations" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" onClick={() => setMenuOpen(false)}>{t("nav.integrations")}</Link>
                 <Link href="/settings/api-keys" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" onClick={() => setMenuOpen(false)}>{t("nav.apikeys")}</Link>
                 <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="text-sm text-red-600 text-left">{t("nav.logout")}</button>
               </>

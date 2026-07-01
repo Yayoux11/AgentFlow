@@ -25,11 +25,24 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
   const [related, setRelated] = useState<Agent[]>([]);
   const [fetching, setFetching] = useState(true);
 
-  // Run state
+  // Run state (authenticated)
   const [prompt, setPrompt] = useState("");
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<AgentRunResponse | null>(null);
   const [runError, setRunError] = useState("");
+
+  // Demo state (unauthenticated — B19)
+  const DEMO_MAX = 3;
+  const DEMO_KEY = "af_demo_count";
+  const [demoPrompt, setDemoPrompt] = useState("");
+  const [demoRunning, setDemoRunning] = useState(false);
+  const [demoResult, setDemoResult] = useState<AgentRunResponse | null>(null);
+  const [demoError, setDemoError] = useState("");
+  const [demoCount, setDemoCount] = useState(0);
+
+  useEffect(() => {
+    setDemoCount(parseInt(localStorage.getItem(DEMO_KEY) ?? "0", 10));
+  }, []);
 
   const [subscription, setSubscription] = useState<{ plan: string } | null>(null);
 
@@ -81,6 +94,25 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
       }
     } finally {
       setRunning(false);
+    }
+  }
+
+  async function handleDemoRun(e: React.FormEvent) {
+    e.preventDefault();
+    if (!demoPrompt.trim() || demoCount >= DEMO_MAX) return;
+    setDemoRunning(true);
+    setDemoError("");
+    setDemoResult(null);
+    try {
+      const res = await api.post<AgentRunResponse>(`/agents/${slug}/demo`, { prompt: demoPrompt });
+      setDemoResult(res);
+      const next = demoCount + 1;
+      setDemoCount(next);
+      localStorage.setItem(DEMO_KEY, String(next));
+    } catch {
+      setDemoError(t("agent.error.generic"));
+    } finally {
+      setDemoRunning(false);
     }
   }
 
@@ -350,19 +382,77 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
                       </div>
                     )}
                   </form>
-                ) : (
-                  <div className="flex flex-col items-center py-8 gap-4">
-                    <Lock className="text-slate-300 dark:text-slate-600" size={36} />
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">{t("agent.try.login_prompt")}</p>
+                ) : demoCount >= DEMO_MAX ? (
+                  <div className="flex flex-col items-center py-10 gap-5 text-center">
+                    <Lock size={40} className="text-indigo-300 dark:text-indigo-600" />
+                    <div>
+                      <p className="font-bold text-slate-900 dark:text-white text-lg mb-1">{t("agent.demo.limit_title")}</p>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">{t("agent.demo.limit_desc")}</p>
+                    </div>
                     <div className="flex gap-3">
                       <Link href="/login" className="px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                         {t("agent.try.login")}
                       </Link>
-                      <Link href="/register" className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
-                        {t("agent.try.register")}
+                      <Link href="/register" className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                        {t("agent.demo.signup_cta")}
                       </Link>
                     </div>
                   </div>
+                ) : (
+                  <form onSubmit={handleDemoRun} className="space-y-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2.5 py-1 rounded-full">
+                        {t("agent.demo.badge")} — {DEMO_MAX - demoCount}/{DEMO_MAX} {t("agent.demo.remaining")}
+                      </span>
+                    </div>
+                    <textarea
+                      value={demoPrompt}
+                      onChange={(e) => setDemoPrompt(e.target.value)}
+                      rows={4}
+                      placeholder={`Décrivez votre demande pour ${agent.name}…`}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                    {demoError && (
+                      <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
+                        <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+                        <span>{demoError}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-slate-400 dark:text-slate-500">
+                        <Link href="/register" className="text-indigo-600 hover:underline font-medium">{t("agent.demo.signup_inline")}</Link>
+                        {" "}{t("agent.demo.signup_inline_suffix")}
+                      </p>
+                      <button
+                        type="submit"
+                        disabled={demoRunning || !demoPrompt.trim()}
+                        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {demoRunning ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                        {demoRunning ? t("agent.try.sending") : t("agent.demo.run")}
+                      </button>
+                    </div>
+                    {demoResult && (
+                      <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-lg">{agent.icon}</span>
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white">{agent.name}</span>
+                          <span className="ml-auto text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">{t("agent.demo.mode")}</span>
+                        </div>
+                        <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                          {demoResult.response}
+                        </div>
+                        {demoCount >= DEMO_MAX && (
+                          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <p className="text-xs text-slate-500">{t("agent.demo.limit_inline")}</p>
+                            <Link href="/register" className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                              {t("agent.demo.signup_cta")}
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </form>
                 )}
               </div>
             </section>

@@ -97,6 +97,37 @@ async def get_agent(slug: str, db: AsyncSession = Depends(get_db)):
 
 
 # ---------------------------------------------------------------------------
+# Demo run — no auth, haiku model, capped at 600 tokens (B19)
+# ---------------------------------------------------------------------------
+
+@router.post("/{slug}/demo", response_model=AgentRunResponse)
+async def demo_run_agent(slug: str, body: AgentRunRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Agent).where(Agent.slug == slug, Agent.is_active == True))
+    agent = result.scalar_one_or_none()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+
+    if not settings.ANTHROPIC_API_KEY:
+        return AgentRunResponse(
+            response=f"[DEMO] {agent.name} a bien reçu votre demande. Configurez ANTHROPIC_API_KEY pour activer les vraies réponses IA.",
+            input_tokens=0, output_tokens=0, agent_name=agent.name,
+        )
+
+    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=600,
+        system=agent.system_prompt + "\n\nNote: tu es en mode démonstration, garde ta réponse concise (max 3 paragraphes).",
+        messages=[{"role": "user", "content": body.prompt}],
+    )
+    return AgentRunResponse(
+        response=message.content[0].text,
+        input_tokens=message.usage.input_tokens,
+        output_tokens=message.usage.output_tokens,
+        agent_name=agent.name,
+    )
+
+
 # Run agent (requires auth + subscription)
 # ---------------------------------------------------------------------------
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key, Mail, Bell } from "lucide-react";
+import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key, Mail, Bell, Webhook } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -197,6 +197,10 @@ export default function Navbar() {
                       <Link href="/settings/api-keys" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         <Key size={15} />
                         {t("nav.apikeys")}
+                      </Link>
+                      <Link href="/settings/webhook" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        <Webhook size={15} />
+                        {t("nav.webhook")}
                       </Link>
                       <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                         <LogOut size={15} />

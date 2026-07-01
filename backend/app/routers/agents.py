@@ -14,6 +14,7 @@ from app.config import settings
 from app.deps import get_current_user, get_db, require_superuser
 from app.models import Agent, AgentRequest, Subscription, UsageStat
 from app.services.notifications import create_notification
+from app.services.outgoing_webhook import send_webhook
 from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, MessageResponse
 from app.models import User
 
@@ -194,6 +195,16 @@ async def run_agent(
                     body=f"Vous avez utilisé {usage_now}/{limit2} requêtes ce mois. Pensez à passer au plan supérieur.",
                     db=db,
                 )
+
+    # Fire outgoing webhook (best-effort, non-blocking)
+    await send_webhook(current_user.id, "agent.run", {
+        "agent": agent.slug,
+        "agent_name": agent.name,
+        "prompt": body.prompt[:500],
+        "response": ai_response[:500],
+        "input_tokens": in_tokens,
+        "output_tokens": out_tokens,
+    }, db)
 
     # Log request + update usage
     log = AgentRequest(

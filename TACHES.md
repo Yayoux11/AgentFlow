@@ -43,6 +43,7 @@
 | 33 | **B4** — Onboarding wizard : 3 étapes (catégories / agents / Gmail) + redirect post-register | session 10 |
 | 34 | **B19** — Playground sans compte : 3 démos via haiku, localStorage counter, signup wall | session 10 |
 | 35 | **B10** — Notifications in-app : modèle + router backend + hook polling 30s + cloche Navbar | session 10 |
+| 36 | **B18** — Webhook sortant : webhook_url user + service httpx + router settings/webhook + page UI + test | session 10 |
 
 ---
 
@@ -65,7 +66,6 @@ _(aucune tâche en cours)_
 | # | Tâche | Pourquoi |
 |---|-------|---------|
 | B11 | **Plan Enterprise — multi-utilisateurs / équipes** | Vente B2B, ticket moyen plus élevé |
-| B18 | **Webhook sortant configurable** | Permet aux utilisateurs d'intégrer AgentFlow dans leur propre stack |
 
 ---
 

@@ -37,7 +37,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(email, password, fullName || undefined);
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erreur lors de l'inscription");
     } finally {

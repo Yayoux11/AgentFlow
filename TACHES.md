@@ -66,7 +66,29 @@ _(aucune tâche en cours)_
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
-_(backlog vide — toutes les tâches planifiées sont terminées)_
+### 🔴 Critique avant vrai lancement
+
+| # | Tâche | Pourquoi |
+|---|-------|---------|
+| S1 | **Stripe** — paiements Pro + Enterprise | Sans ça, les plans sont fictifs — aucun revenu possible |
+| S2 | **Pages légales** — CGU, Politique de confidentialité, RGPD | Obligatoire pour la France/EU avant tout lancement public |
+| S3 | **Barre de quota** dans le dashboard (X/Y requêtes) | Réduit le churn sur dépassement, feedback utilisateur clair |
+
+### 🟠 Valeur produit forte
+
+| # | Tâche | Pourquoi |
+|---|-------|---------|
+| S4 | **Runs planifiés** (cron sur un agent) | "Fais tourner DataAnalyst tous les lundis" — killer feature retention |
+| S5 | **Agents multi-tours** (conversation contextuelle) | Chaque run est actuellement isolé — l'IA ne se souvient pas du tour précédent |
+| S6 | **Catalogue d'agents étendu** (5 → 15+ agents) | Marketplace trop vide pour convertir un visiteur froid |
+
+### 🟡 Croissance & acquisition
+
+| # | Tâche | Pourquoi |
+|---|-------|---------|
+| S7 | **Widget embed** (playground intégrable sur un site externe) | Distribution virale — les utilisateurs partagent leur agent |
+| S8 | **Email digest hebdo** (résumé d'activité automatique) | Réactivation passive des utilisateurs dormants |
+| S9 | **Rate limiting backend** (protection API publique) | Avant d'ouvrir Stripe, un mauvais acteur peut exploiter les agents |
 
 ---
 

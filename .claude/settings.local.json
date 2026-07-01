@@ -14,7 +14,11 @@
       "Bash(python3 -c \"import json,sys; agents=json.load\\(sys.stdin\\); print\\(f'{len\\(agents\\)} agents'\\); [print\\(f'  - {a[\\\\\"name\\\\\"]} \\({a[\\\\\"slug\\\\\"]}\\)'\\) for a in agents]\")",
       "PowerShell(New-Item *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vercel *)",
+      "Bash(python -m alembic upgrade head)"
     ]
   }
 }

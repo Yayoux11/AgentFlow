@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import engine, Base
+from app.database import engine
 from app.routers import admin, agents, auth, subscriptions, users, webhooks
 from app.routers import integrations, api_keys, notifications, outgoing_webhook, team
 from app.workers.email_worker import start_scheduler, stop_scheduler
@@ -17,13 +17,6 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     db_host = settings.DATABASE_URL.split("@")[-1] if "@" in settings.DATABASE_URL else settings.DATABASE_URL
     logger.warning(f"Connecting to database at: {db_host}")
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("Database connection successful")
-    except Exception as e:
-        logger.error(f"Database connection failed: {e}")
-        raise
     start_scheduler()
     yield
     stop_scheduler()

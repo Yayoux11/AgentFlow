@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.models import Agent, AgentRule, EmailIntegration, EmailJob
+from app.services.notifications import create_notification
 from app.services.crypto import decrypt_token
 from app.services import gmail as gmail_svc
 from app.services import outlook as outlook_svc
@@ -134,4 +135,14 @@ async def process_email_with_rule(
         email_id=email["id"], subject=email["subject"], from_address=email["from"],
         action_taken=action_taken, ai_response=ai_response,
     ))
+
+    action_label = "réponse rédigée" if action_taken == "drafted" else "email envoyé"
+    subject_preview = email["subject"][:60] + ("…" if len(email["subject"]) > 60 else "")
+    await create_notification(
+        user_id=rule.user_id,
+        type="email_rule",
+        title=f"Règle « {rule.name} » — {action_label}",
+        body=f"Email de {email['from'].split('<')[0].strip()} : {subject_preview}",
+        db=db,
+    )
     logger.info(f"Email {email['id']} processed → {action_taken}")

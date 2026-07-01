@@ -60,6 +60,15 @@ export interface TokenResponse {
   token_type: string;
 }
 
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  read: boolean;
+  created_at: string;
+}
+
 export interface ApiKey {
   id: string;
   name: string;

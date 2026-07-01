@@ -39,6 +39,10 @@
 | 29 | **Langue auto-détectée** — navigator.language + localStorage, suppression switcher FR/EN | session 9 |
 | 30 | **Suppression faux contenus** — témoignages, "2400+ users / 4.8/5", notes agents | session 9 |
 | 31 | **Accès agents Starter** — sidebar 3 états (Pro / Starter / non-inscrit) + i18n | session 9 |
+| 32 | **B17** — Vérification email : token DB + endpoint verify + resend + banner Navbar + i18n | session 10 |
+| 33 | **B4** — Onboarding wizard : 3 étapes (catégories / agents / Gmail) + redirect post-register | session 10 |
+| 34 | **B19** — Playground sans compte : 3 démos via haiku, localStorage counter, signup wall | session 10 |
+| 35 | **B10** — Notifications in-app : modèle + router backend + hook polling 30s + cloche Navbar | session 10 |
 
 ---
 
@@ -56,21 +60,12 @@ _(aucune tâche en cours)_
 |---|-------|---------|
 | B2 | **Clé API Anthropic dans .env Render** | Les agents IA ne fonctionnent pas sans elle |
 
-### 🟠 Important (expérience utilisateur)
-
-| # | Tâche | Pourquoi |
-|---|-------|---------|
-| B4 | **Onboarding utilisateur** (wizard après inscription) | Taux d'activation faible sans guidage initial |
-| B17 | **Vérification email** (lien de confirmation après register) | Évite les faux comptes et améliore la délivrabilité |
-
 ### 🟡 Améliorations produit
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
-| B10 | **Notifications in-app** (règles emails déclenchées, tâches terminées) | Feedback temps-réel |
 | B11 | **Plan Enterprise — multi-utilisateurs / équipes** | Vente B2B, ticket moyen plus élevé |
 | B18 | **Webhook sortant configurable** | Permet aux utilisateurs d'intégrer AgentFlow dans leur propre stack |
-| B19 | **Playground agent** (test sans compte, 3 requêtes gratuites) | Réduit la friction à l'adoption |
 
 ---
 

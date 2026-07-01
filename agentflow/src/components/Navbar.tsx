@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key, Mail } from "lucide-react";
+import { Menu, X, Zap, LogOut, LayoutDashboard, ChevronDown, Crown, Plug, Moon, Sun, Key, Mail, Bell } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useTheme } from "@/context/ThemeContext";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const { user, loading, logout } = useAuth();
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications(!!user);
   const { theme, toggle: toggleTheme } = useTheme();
   const { t } = useLang();
   const router = useRouter();
@@ -92,6 +95,62 @@ export default function Navbar() {
 
           {/* Desktop right */}
           <div className="hidden md:flex items-center gap-2">
+            {/* Notifications bell */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => { setNotifOpen((v) => !v); setUserMenuOpen(false); }}
+                  className="relative p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+                {notifOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-20 overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">Notifications</p>
+                        {unreadCount > 0 && (
+                          <button onClick={markAllRead} className="text-xs text-indigo-600 hover:underline">Tout marquer lu</button>
+                        )}
+                      </div>
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
+                            Aucune notification
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <button
+                              key={n.id}
+                              onClick={() => markRead(n.id)}
+                              className={`w-full text-left px-4 py-3 border-b border-slate-50 dark:border-slate-700/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors ${!n.read ? "bg-indigo-50/50 dark:bg-indigo-900/10" : ""}`}
+                            >
+                              <div className="flex items-start gap-2.5">
+                                {!n.read && <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full flex-shrink-0 mt-1.5" />}
+                                <div className={!n.read ? "" : "pl-4"}>
+                                  <p className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">{n.title}</p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{n.body}</p>
+                                  <p className="text-[10px] text-slate-300 dark:text-slate-600 mt-1">
+                                    {new Date(n.created_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}

@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.deps import get_current_user, get_db, require_superuser
 from app.models import Agent, AgentRequest, Subscription, UsageStat
+from app.services.notifications import create_notification
 from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, MessageResponse
 from app.models import User
 
@@ -175,6 +176,24 @@ async def run_agent(
         ai_response = message.content[0].text
         in_tokens = message.usage.input_tokens
         out_tokens = message.usage.output_tokens
+
+    # Quota warning at 80%
+    if not current_user.is_superuser:
+        sub_result2 = await db.execute(select(Subscription).where(Subscription.user_id == current_user.id))
+        sub2 = sub_result2.scalar_one_or_none()
+        plan2 = sub2.plan if sub2 else "starter"
+        limit2 = settings.PLAN_LIMITS.get(plan2, {}).get("max_requests", 1000)
+        if limit2 != -1:
+            usage_now = await _get_usage_this_month(current_user.id, db)
+            threshold = int(limit2 * 0.8)
+            if usage_now == threshold:
+                await create_notification(
+                    user_id=current_user.id,
+                    type="quota_warning",
+                    title="Quota à 80%",
+                    body=f"Vous avez utilisé {usage_now}/{limit2} requêtes ce mois. Pensez à passer au plan supérieur.",
+                    db=db,
+                )
 
     # Log request + update usage
     log = AgentRequest(

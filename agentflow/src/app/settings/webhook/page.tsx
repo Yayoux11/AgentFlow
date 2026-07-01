@@ -35,7 +35,7 @@ export default function WebhookSettingsPage() {
     setSaving(true);
     setSaved(false);
     try {
-      await api.put("/settings/webhook", { webhook_url: webhookUrl || null });
+      await api.patch("/settings/webhook", { webhook_url: webhookUrl || null });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
@@ -48,7 +48,7 @@ export default function WebhookSettingsPage() {
   async function handleDelete() {
     setSaving(true);
     try {
-      await api.put("/settings/webhook", { webhook_url: null });
+      await api.patch("/settings/webhook", { webhook_url: null });
       setWebhookUrl("");
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

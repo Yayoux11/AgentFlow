@@ -25,7 +25,7 @@ async def get_webhook(current_user: User = Depends(get_current_user)):
     return WebhookOut(webhook_url=current_user.webhook_url)
 
 
-@router.put("", response_model=WebhookOut)
+@router.patch("", response_model=WebhookOut)
 async def update_webhook(
     body: WebhookConfig,
     current_user: User = Depends(get_current_user),

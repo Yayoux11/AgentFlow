@@ -44,6 +44,7 @@
 | 34 | **B19** — Playground sans compte : 3 démos via haiku, localStorage counter, signup wall | session 10 |
 | 35 | **B10** — Notifications in-app : modèle + router backend + hook polling 30s + cloche Navbar | session 10 |
 | 36 | **B18** — Webhook sortant : webhook_url user + service httpx + router settings/webhook + page UI + test | session 10 |
+| 37 | **B11** — Enterprise teams : Team/TeamMember/TeamInvitation + router + email invite + page UI + accès agents hérité | session 10 |
 
 ---
 
@@ -65,7 +66,7 @@ _(aucune tâche en cours)_
 
 | # | Tâche | Pourquoi |
 |---|-------|---------|
-| B11 | **Plan Enterprise — multi-utilisateurs / équipes** | Vente B2B, ticket moyen plus élevé |
+_(backlog vide — toutes les tâches planifiées sont terminées)_
 
 ---
 

@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.deps import get_current_user, get_db, require_superuser
-from app.models import Agent, AgentRequest, Subscription, UsageStat
+from app.models import Agent, AgentRequest, Subscription, UsageStat, TeamMember, Team
 from app.services.notifications import create_notification
 from app.services.outgoing_webhook import send_webhook
 from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, MessageResponse
@@ -47,26 +47,39 @@ async def _increment_usage(user_id: uuid.UUID, db: AsyncSession) -> None:
 
 
 async def _can_access_agent(user: User, agent: Agent, db: AsyncSession) -> bool:
-    """Superuser always OK. Otherwise check subscription plan."""
+    """Superuser always OK. Check own subscription or team enterprise membership."""
     if user.is_superuser:
         return True
 
     result = await db.execute(select(Subscription).where(Subscription.user_id == user.id))
     sub = result.scalar_one_or_none()
-    if not sub or sub.status not in ("active", "trialing"):
-        return False
 
-    if sub.plan in ("pro", "enterprise"):
-        return True
+    if sub and sub.status in ("active", "trialing"):
+        if sub.plan in ("pro", "enterprise"):
+            return True
+        # starter: check active agent count
+        from app.models import UserAgent
+        active_count_result = await db.execute(
+            select(func.count()).select_from(UserAgent).where(UserAgent.user_id == user.id, UserAgent.is_active == True)
+        )
+        count = active_count_result.scalar_one()
+        limit = settings.PLAN_LIMITS["starter"]["max_agents"]
+        if count < limit:
+            return True
 
-    # starter: check active agent count
-    from app.models import UserAgent
-    active_count_result = await db.execute(
-        select(func.count()).select_from(UserAgent).where(UserAgent.user_id == user.id, UserAgent.is_active == True)
-    )
-    count = active_count_result.scalar_one()
-    limit = settings.PLAN_LIMITS["starter"]["max_agents"]
-    return count < limit
+    # Check if member of an enterprise team
+    member_result = await db.execute(select(TeamMember).where(TeamMember.user_id == user.id))
+    membership = member_result.scalar_one_or_none()
+    if membership:
+        team_result = await db.execute(select(Team).where(Team.id == membership.team_id))
+        team = team_result.scalar_one_or_none()
+        if team:
+            owner_sub_result = await db.execute(select(Subscription).where(Subscription.user_id == team.owner_id))
+            owner_sub = owner_sub_result.scalar_one_or_none()
+            if owner_sub and owner_sub.plan == "enterprise" and owner_sub.status in ("active", "trialing"):
+                return True
+
+    return False
 
 
 # ---------------------------------------------------------------------------

@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine, Base
 from app.routers import admin, agents, auth, subscriptions, users, webhooks
-from app.routers import integrations, api_keys, notifications, outgoing_webhook
+from app.routers import integrations, api_keys, notifications, outgoing_webhook, team
 from app.workers.email_worker import start_scheduler, stop_scheduler
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,7 @@ app.include_router(integrations.router)
 app.include_router(api_keys.router)
 app.include_router(notifications.router)
 app.include_router(outgoing_webhook.router)
+app.include_router(team.router)
 
 
 @app.get("/health")

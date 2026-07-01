@@ -298,6 +298,47 @@ class ApiKeyCreatedOut(ApiKeyOut):
 
 
 # ---------------------------------------------------------------------------
+# Teams (B11)
+# ---------------------------------------------------------------------------
+
+class TeamCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+
+
+class TeamMemberOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    joined_at: datetime
+    email: str = ""
+    full_name: Optional[str] = None
+
+
+class TeamInvitationOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    email: str
+    status: str
+    created_at: datetime
+
+
+class TeamOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    name: str
+    created_at: datetime
+    members: List[TeamMemberOut] = []
+    invitations: List[TeamInvitationOut] = []
+
+
+class InviteRequest(BaseModel):
+    email: EmailStr
+
+
+# ---------------------------------------------------------------------------
 # Generic
 # ---------------------------------------------------------------------------
 

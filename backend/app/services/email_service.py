@@ -67,6 +67,40 @@ async def send_verification_email(to: str, verify_url: str, full_name: Optional[
     await send_email(to, "Confirmez votre adresse email — AgentFlow", html)
 
 
+async def send_team_invitation_email(to: str, invite_url: str, team_name: str, inviter_name: Optional[str] = None) -> None:
+    inviter = inviter_name or "Un membre AgentFlow"
+    html = f"""
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <span style="background: #4f46e5; color: white; padding: 10px 16px; border-radius: 12px;
+                     font-size: 20px; font-weight: 900; letter-spacing: -0.5px;">⚡ AgentFlow</span>
+      </div>
+      <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
+        Vous êtes invité à rejoindre une équipe
+      </h1>
+      <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+        <strong>{inviter}</strong> vous invite à rejoindre l'équipe <strong>{team_name}</strong> sur AgentFlow Enterprise.
+        En acceptant, vous accédez à tous les agents IA inclus dans le plan Enterprise.
+      </p>
+      <a href="{invite_url}"
+         style="display: inline-block; background: #4f46e5; color: white; padding: 14px 28px;
+                border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none;
+                margin-bottom: 24px;">
+        Rejoindre l'équipe →
+      </a>
+      <p style="color: #94a3b8; font-size: 12px; line-height: 1.6;">
+        Ce lien expire dans <strong>48 heures</strong>. Si vous ne souhaitez pas rejoindre cette équipe,
+        ignorez cet email.
+      </p>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+      <p style="color: #cbd5e1; font-size: 11px; text-align: center;">
+        © AgentFlow — La marketplace d'agents IA
+      </p>
+    </div>
+    """
+    await send_email(to, f"Invitation à rejoindre l'équipe {team_name} — AgentFlow", html)
+
+
 async def send_reset_password_email(to: str, reset_url: str, full_name: Optional[str] = None) -> None:
     name = full_name or "utilisateur"
     html = f"""

@@ -11,12 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import create_access_token, create_refresh_token, decode_token, hash_password, verify_password
 from app.config import settings
 from app.deps import get_current_user, get_db
-from app.models import PasswordResetToken, Subscription, User
+from app.models import EmailIntegration, PasswordResetToken, Subscription, User
 from app.models import utcnow
 from app.schemas import (
     ForgotPasswordRequest, LoginRequest, MessageResponse, RefreshRequest,
     RegisterRequest, ResetPasswordRequest, TokenResponse, UserOut,
 )
+from app.services.crypto import encrypt_token
 from app.services.email_service import send_reset_password_email, send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -25,7 +26,7 @@ GOOGLE_SSO_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_SSO_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_SSO_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
 GOOGLE_SSO_REDIRECT = f"{settings.BACKEND_URL}/auth/google/callback"
-GOOGLE_SSO_SCOPES = "openid email profile"
+GOOGLE_SSO_SCOPES = "openid email profile https://www.googleapis.com/auth/gmail.modify"
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
@@ -157,19 +158,48 @@ async def google_sso_callback(
             email=email,
             full_name=full_name,
             hashed_password=hash_password(secrets.token_urlsafe(32)),
-            email_verified=True,  # Google already verified the email
+            email_verified=True,
         )
         db.add(user)
         await db.flush()
         db.add(Subscription(user_id=user.id, plan="starter", status="active"))
-        await db.commit()
+        await db.flush()
     elif not user.is_active:
         return RedirectResponse(f"{settings.FRONTEND_URL}/login?error=account_disabled")
+
+    # Auto-link Gmail integration if refresh_token is present (first grant or scope upgrade)
+    google_refresh_token = tokens.get("refresh_token")
+    if google_refresh_token:
+        from datetime import timedelta
+        token_expiry = utcnow() + timedelta(seconds=tokens.get("expires_in", 3600))
+        existing = await db.execute(
+            select(EmailIntegration).where(
+                EmailIntegration.user_id == user.id,
+                EmailIntegration.provider == "gmail",
+            )
+        )
+        integration = existing.scalar_one_or_none()
+        if integration:
+            integration.encrypted_access_token = encrypt_token(tokens["access_token"])
+            integration.encrypted_refresh_token = encrypt_token(google_refresh_token)
+            integration.token_expiry = token_expiry
+            integration.is_active = True
+        else:
+            db.add(EmailIntegration(
+                user_id=user.id,
+                provider="gmail",
+                email_address=email,
+                encrypted_access_token=encrypt_token(tokens["access_token"]),
+                encrypted_refresh_token=encrypt_token(google_refresh_token),
+                token_expiry=token_expiry,
+                is_active=True,
+            ))
+
+    await db.commit()
 
     access_token = create_access_token(str(user.id))
     refresh_token = create_refresh_token(str(user.id))
 
-    # Redirect to frontend callback page with tokens
     params = urllib.parse.urlencode({"access_token": access_token, "refresh_token": refresh_token})
     return RedirectResponse(f"{settings.FRONTEND_URL}/auth/callback?{params}")
 

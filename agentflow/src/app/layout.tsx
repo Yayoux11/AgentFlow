@@ -49,6 +49,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://agentflow.io",
   },
+  verification: {
+    google: "BJqscqUX9_j5O5RaTSk7QVDGYc2iaVk7ityH7FeU0I8",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -13,7 +13,6 @@ export const metadata: Metadata = {
     title: "Marketplace AgentFlow — Tous nos agents IA",
     description: "Explorez et déployez des agents IA spécialisés pour chaque métier. Email, RH, immo, dev, finance…",
     url: "https://agentflow.io/marketplace",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "AgentFlow Marketplace" }],
   },
 };
 

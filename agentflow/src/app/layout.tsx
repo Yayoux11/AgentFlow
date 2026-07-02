@@ -40,13 +40,11 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     siteName: "AgentFlow",
     url: "https://agentflow.io",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "AgentFlow — La marketplace d'agents IA" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "AgentFlow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés.",
-    images: ["/og.png"],
   },
   alternates: {
     canonical: "https://agentflow.io",

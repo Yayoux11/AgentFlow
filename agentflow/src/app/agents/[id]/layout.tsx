@@ -43,8 +43,7 @@ export async function generateMetadata({
         description: agent.long_description || agent.description,
         url,
         type: "website",
-        images: [{ url: "/og.png", width: 1200, height: 630, alt: agent.name }],
-      },
+        },
       twitter: {
         card: "summary_large_image",
         title: `${agent.name} — Agent IA | AgentFlow`,

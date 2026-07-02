@@ -50,6 +50,7 @@
 | 40 | **Fix marketplace** — seed_agents.py dans startCommand Render + agents correctement chargés depuis l'API | session 11 |
 | 41 | **Pipeline ML** — Migration 008 (4 tables) + services embeddings/RAG/intent_router + routers knowledge & intent-routes + custom-prompts + 2 pages settings + api-client postForm/put | session 11 |
 | 42 | **Vrais agents (Phase 1-2-3)** — Multi-tours (conversation_id, chat UI bulles), Tool use (function calling Claude avec get_datetime/send_email/read_emails/search_kb), Triggers (webhook fire + scheduled runs CRUD) + migration 009 + settings/triggers page | session 12 |
+| 43 | **11 nouveaux agents + call_agent** — ImmoBot, JobSeeker, MotivAI, AutoSearch, FullStackAI, CyberGuard, LeadDev, ProjectPilot, ProductOwner, ScrumBot, TalentSearch + outil call_agent (connexions inter-agents avec guard profondeur 2) + guides d'utilisation | session 12 |
 
 ---
 

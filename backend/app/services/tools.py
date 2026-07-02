@@ -12,6 +12,31 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import EmailIntegration
 
 TOOL_DEFINITIONS: dict[str, dict] = {
+    "call_agent": {
+        "name": "call_agent",
+        "description": (
+            "Call another specialized agent to delegate a sub-task and get expert output. "
+            "Use this when you need expertise outside your own domain. "
+            "Available agent slugs: apartment-finder, job-finder, car-finder, fullstack-dev, "
+            "security-auditor, lead-dev, project-manager, product-owner, scrum-master, "
+            "cover-letter, profile-finder, email-writer, data-analyst, social-manager, "
+            "support-bot, hr-recruiter, finance-tracker, code-reviewer, seo-optimizer."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "agent_slug": {
+                    "type": "string",
+                    "description": "The slug of the agent to call",
+                },
+                "prompt": {
+                    "type": "string",
+                    "description": "The task or question to send to the other agent",
+                },
+            },
+            "required": ["agent_slug", "prompt"],
+        },
+    },
     "get_current_datetime": {
         "name": "get_current_datetime",
         "description": "Get the current date and time in UTC.",
@@ -119,8 +144,61 @@ async def execute_tool(
     user_id: uuid.UUID,
     agent_slug: str,
     db: AsyncSession,
+    call_depth: int = 0,
 ) -> str:
     """Execute a tool call and return the result as a string."""
+
+    if name == "call_agent":
+        if call_depth >= 2:
+            return "Error: Maximum agent nesting depth reached (2 levels)."
+
+        target_slug = input_data.get("agent_slug", "").strip()
+        sub_prompt = input_data.get("prompt", "").strip()
+        if not target_slug or not sub_prompt:
+            return "Error: agent_slug and prompt are required."
+        if target_slug == agent_slug:
+            return "Error: An agent cannot call itself."
+
+        from sqlalchemy import select
+        from app.models import Agent
+        from app.config import settings
+        import anthropic
+
+        agent_result = await db.execute(
+            select(Agent).where(Agent.slug == target_slug, Agent.is_active == True)
+        )
+        target_agent = agent_result.scalar_one_or_none()
+        if not target_agent:
+            return f"Error: Agent '{target_slug}' not found or inactive."
+
+        if not settings.ANTHROPIC_API_KEY:
+            return f"[STUB] {target_agent.name} would respond to: {sub_prompt}"
+
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        sub_tools = get_tools_for_agent(target_agent.tools or [])
+        loop_messages: list = [{"role": "user", "content": sub_prompt}]
+
+        while True:
+            resp = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=1024,
+                system=target_agent.system_prompt,
+                messages=loop_messages,
+                **({"tools": sub_tools} if sub_tools else {}),
+            )
+            if resp.stop_reason == "tool_use":
+                loop_messages.append({"role": "assistant", "content": content_blocks_to_dicts(resp.content)})
+                sub_results = []
+                for block in resp.content:
+                    if block.type == "tool_use":
+                        r = await execute_tool(block.name, block.input, user_id, target_slug, db, call_depth + 1)
+                        sub_results.append({"type": "tool_result", "tool_use_id": block.id, "content": r})
+                loop_messages.append({"role": "user", "content": sub_results})
+            else:
+                result_text = extract_text_from_blocks(resp.content) or (resp.content[0].text if resp.content else "")
+                break
+
+        return f"[{target_agent.name}]:\n{result_text}"
 
     if name == "get_current_datetime":
         return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")

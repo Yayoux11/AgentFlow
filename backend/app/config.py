@@ -39,12 +39,9 @@ class Settings(BaseSettings):
     # Fernet key for encrypting OAuth tokens (generate: Fernet.generate_key().decode())
     ENCRYPTION_KEY: str = ""
 
-    # SMTP (reset password emails)
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""
-    SMTP_FROM: str = "AgentFlow <noreply@agentflow.io>"
+    # Resend (transactional emails)
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "AgentFlow <onboarding@resend.dev>"
 
     FRONTEND_URL: str = "http://localhost:3000"
     BACKEND_URL: str = "http://localhost:8000"

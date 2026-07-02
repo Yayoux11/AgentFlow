@@ -45,6 +45,10 @@
 | 35 | **B10** — Notifications in-app : modèle + router backend + hook polling 30s + cloche Navbar | session 10 |
 | 36 | **B18** — Webhook sortant : webhook_url user + service httpx + router settings/webhook + page UI + test | session 10 |
 | 37 | **B11** — Enterprise teams : Team/TeamMember/TeamInvitation + router + email invite + page UI + accès agents hérité | session 10 |
+| 38 | **Fix prod** — Migration 007 idempotente (IF NOT EXISTS) + alembic upgrade head dans startCommand Render | session 11 |
+| 39 | **Fix prod SSO** — google_sso_callback : auto-création EmailIntegration Gmail si refresh_token | session 11 |
+| 40 | **Fix marketplace** — seed_agents.py dans startCommand Render + agents correctement chargés depuis l'API | session 11 |
+| 41 | **Pipeline ML** — Migration 008 (4 tables) + services embeddings/RAG/intent_router + routers knowledge & intent-routes + custom-prompts + 2 pages settings + api-client postForm/put | session 11 |
 
 ---
 

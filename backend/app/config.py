@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     STRIPE_PRICE_ENTERPRISE: str = ""
 
     ANTHROPIC_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
 
     # Google OAuth (Gmail)
     GOOGLE_CLIENT_ID: str = ""

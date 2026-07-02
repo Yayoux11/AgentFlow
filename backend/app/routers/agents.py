@@ -12,9 +12,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.deps import get_current_user, get_db, require_superuser
-from app.models import Agent, AgentRequest, Subscription, UsageStat, TeamMember, Team
+from app.models import Agent, AgentCustomPrompt, AgentRequest, Subscription, UsageStat, TeamMember, Team
 from app.services.notifications import create_notification
 from app.services.outgoing_webhook import send_webhook
+from app.services.rag import retrieve_context
+from app.services.intent_router import route_intent
 from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, MessageResponse
 from app.models import User
 
@@ -174,9 +176,39 @@ async def run_agent(
             if usage >= limit:
                 raise HTTPException(status_code=429, detail=f"Monthly quota reached ({limit} requests). Upgrade your plan.")
 
+    # --- ML Pipeline ---
+    # Step 1: Intent routing (redirect to better agent if configured)
+    if body.use_routing:
+        routed_slug = await route_intent(db, current_user.id, body.prompt, slug)
+        if routed_slug != slug:
+            rerouted = await db.execute(select(Agent).where(Agent.slug == routed_slug, Agent.is_active == True))
+            alt = rerouted.scalar_one_or_none()
+            if alt:
+                agent = alt
+                slug = routed_slug
+
+    # Step 2: RAG — retrieve relevant context from knowledge base
+    rag_context = ""
+    if body.use_rag:
+        rag_context = await retrieve_context(db, current_user.id, body.prompt, agent_slug=agent.slug)
+
+    # Step 3: Custom prompt override (per-user per-agent)
+    custom_prompt_result = await db.execute(
+        select(AgentCustomPrompt).where(
+            AgentCustomPrompt.user_id == current_user.id,
+            AgentCustomPrompt.agent_slug == agent.slug,
+        )
+    )
+    custom_prompt = custom_prompt_result.scalar_one_or_none()
+    system_prompt = custom_prompt.system_prompt if custom_prompt else agent.system_prompt
+
+    # Step 4: Augment prompt with RAG context
+    user_message = body.prompt
+    if rag_context:
+        user_message = f"Contexte documentaire :\n{rag_context}\n\n---\n\nQuestion : {body.prompt}"
+
     # Call Claude
     if not settings.ANTHROPIC_API_KEY:
-        # Stub response for dev without API key
         ai_response = f"[STUB] Agent '{agent.name}' received: {body.prompt}\n\nThis is a simulated response. Configure ANTHROPIC_API_KEY to enable real AI responses."
         in_tokens, out_tokens = 0, 0
     else:
@@ -184,8 +216,8 @@ async def run_agent(
         message = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=2048,
-            system=agent.system_prompt,
-            messages=[{"role": "user", "content": body.prompt}],
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_message}],
         )
         ai_response = message.content[0].text
         in_tokens = message.usage.input_tokens

@@ -45,10 +45,10 @@ async function tryRefresh(): Promise<boolean> {
   return true;
 }
 
-async function request<T>(path: string, options: RequestInit = {}, retry = true): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}, retry = true, skipContentType = false): Promise<T> {
   const { access } = getTokens();
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(skipContentType ? {} : { "Content-Type": "application/json" }),
     ...(options.headers as Record<string, string>),
   };
   if (access) headers["Authorization"] = `Bearer ${access}`;
@@ -57,7 +57,7 @@ async function request<T>(path: string, options: RequestInit = {}, retry = true)
 
   if (res.status === 401 && retry) {
     const refreshed = await tryRefresh();
-    if (refreshed) return request<T>(path, options, false);
+    if (refreshed) return request<T>(path, options, false, skipContentType);
     clearTokens();
     if (typeof window !== "undefined") window.location.href = "/login";
     throw new ApiError(401, "Session expirée, reconnectez-vous.");
@@ -76,8 +76,12 @@ export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: JSON.stringify(body) }),
+  put: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: "PUT", body: JSON.stringify(body) }),
   patch: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  postForm: <T>(path: string, formData: FormData) =>
+    request<T>(path, { method: "POST", body: formData }, true, true),
   saveTokens,
 };

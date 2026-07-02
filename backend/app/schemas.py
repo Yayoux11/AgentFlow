@@ -105,10 +105,6 @@ class AgentUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
-class AgentRunRequest(BaseModel):
-    prompt: str = Field(min_length=1, max_length=8000)
-
-
 class AgentRunResponse(BaseModel):
     response: str
     input_tokens: int
@@ -336,6 +332,80 @@ class TeamOut(BaseModel):
 
 class InviteRequest(BaseModel):
     email: EmailStr
+
+
+# ---------------------------------------------------------------------------
+# Knowledge base (RAG)
+# ---------------------------------------------------------------------------
+
+class KnowledgeBaseOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    agent_slug: Optional[str]
+    name: str
+    file_name: str
+    chunk_count: int
+    status: str
+    created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Intent Routes
+# ---------------------------------------------------------------------------
+
+class IntentRouteCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1)
+    agent_slug: str = Field(min_length=1, max_length=100)
+    priority: int = 0
+
+
+class IntentRouteUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    agent_slug: Optional[str] = None
+    priority: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class IntentRouteOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    name: str
+    description: str
+    agent_slug: str
+    priority: int
+    is_active: bool
+    created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Custom Prompts
+# ---------------------------------------------------------------------------
+
+class AgentCustomPromptUpsert(BaseModel):
+    system_prompt: str = Field(min_length=1)
+
+
+class AgentCustomPromptOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    agent_slug: str
+    system_prompt: str
+    updated_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Agent run (extended)
+# ---------------------------------------------------------------------------
+
+class AgentRunRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=8000)
+    use_rag: bool = True
+    use_routing: bool = True
 
 
 # ---------------------------------------------------------------------------

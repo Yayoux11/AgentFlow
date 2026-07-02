@@ -25,7 +25,7 @@ function VerifyEmailContent() {
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-10 max-w-md w-full text-center shadow-sm">
         <Link href="/" className="inline-flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white mb-8 justify-center">
           <span className="bg-indigo-600 text-white rounded-lg p-1.5"><Zap size={18} strokeWidth={2.5} /></span>
-          AgentFlow
+          Agentoolflow
         </Link>
 
         {status === "loading" && (

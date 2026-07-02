@@ -18,7 +18,8 @@
       "Bash(git push *)",
       "Bash(npx tsc *)",
       "Bash(npx vercel *)",
-      "Bash(python -m alembic upgrade head)"
+      "Bash(python -m alembic upgrade head)",
+      "Bash(git commit *)"
     ]
   }
 }

@@ -13,10 +13,10 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://agentflow.io"),
+  metadataBase: new URL("https://agent-flow-toz3.vercel.app"),
   title: {
-    default: "AgentFlow — La marketplace d'agents IA",
-    template: "%s | AgentFlow",
+    default: "Agentoolflow — La marketplace d'agents IA",
+    template: "%s | Agentoolflow",
   },
   description:
     "Découvrez, abonnez-vous et déployez des agents IA spécialisés. Automatisez vos emails, recrutement, immobilier, dev et plus encore. Opérationnel en 2 minutes.",
@@ -25,29 +25,29 @@ export const metadata: Metadata = {
     "agent email IA", "agent recrutement IA", "agent immobilier IA", "ChatGPT entreprise",
     "automatisation entreprise", "SaaS IA France", "agent IA français",
   ],
-  authors: [{ name: "AgentFlow" }],
-  creator: "AgentFlow",
-  publisher: "AgentFlow",
+  authors: [{ name: "Agentoolflow" }],
+  creator: "Agentoolflow",
+  publisher: "Agentoolflow",
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   openGraph: {
-    title: "AgentFlow — La marketplace d'agents IA",
+    title: "Agentoolflow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés. Déployez en un clic, opérationnel en 2 minutes.",
     type: "website",
     locale: "fr_FR",
-    siteName: "AgentFlow",
-    url: "https://agentflow.io",
+    siteName: "Agentoolflow",
+    url: "https://agent-flow-toz3.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AgentFlow — La marketplace d'agents IA",
+    title: "Agentoolflow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés.",
   },
   alternates: {
-    canonical: "https://agentflow.io",
+    canonical: "https://agent-flow-toz3.vercel.app",
   },
   verification: {
     google: "BJqscqUX9_j5O5RaTSk7QVDGYc2iaVk7ityH7FeU0I8",

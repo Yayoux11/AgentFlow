@@ -31,7 +31,7 @@ export async function generateMetadata({
     const title = `${agent.icon} ${agent.name} — Agent IA`;
     const description = agent.description;
     const keywords = [agent.name, "agent IA", agent.category, ...agent.tags];
-    const url = `https://agentflow.io/agents/${slug}`;
+    const url = `https://agent-flow-toz3.vercel.app/agents/${slug}`;
 
     return {
       title,
@@ -39,21 +39,21 @@ export async function generateMetadata({
       keywords,
       alternates: { canonical: url },
       openGraph: {
-        title: `${agent.name} — Agent IA | AgentFlow`,
+        title: `${agent.name} — Agent IA | Agentoolflow`,
         description: agent.long_description || agent.description,
         url,
         type: "website",
         },
       twitter: {
         card: "summary_large_image",
-        title: `${agent.name} — Agent IA | AgentFlow`,
+        title: `${agent.name} — Agent IA | Agentoolflow`,
         description: agent.description,
       },
     };
   } catch {
     return {
       title: "Agent IA",
-      description: "Découvrez cet agent IA spécialisé sur AgentFlow.",
+      description: "Découvrez cet agent IA spécialisé sur Agentoolflow.",
     };
   }
 }

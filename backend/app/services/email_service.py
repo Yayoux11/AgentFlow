@@ -22,7 +22,7 @@ def _html_shell(content: str, preview_text: str = "") -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>AgentFlow</title>
+  <title>Agentoolflow</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
   {preview}
@@ -37,7 +37,7 @@ def _html_shell(content: str, preview_text: str = "") -> str:
               <table cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="background:#4f46e5;border-radius:14px;padding:10px 18px;">
-                    <span style="color:#ffffff;font-size:18px;font-weight:900;letter-spacing:-0.5px;">⚡ AgentFlow</span>
+                    <span style="color:#ffffff;font-size:18px;font-weight:900;letter-spacing:-0.5px;">⚡ Agentoolflow</span>
                   </td>
                 </tr>
               </table>
@@ -54,8 +54,8 @@ def _html_shell(content: str, preview_text: str = "") -> str:
           <!-- Footer -->
           <tr>
             <td align="center" style="padding:24px 0 0;">
-              <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">© 2025 AgentFlow — La marketplace d'agents IA</p>
-              <p style="color:#cbd5e1;font-size:11px;margin:0;">Vous recevez cet email car vous avez créé un compte sur AgentFlow.</p>
+              <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">© 2025 Agentoolflow — La marketplace d'agents IA</p>
+              <p style="color:#cbd5e1;font-size:11px;margin:0;">Vous recevez cet email car vous avez créé un compte sur Agentoolflow.</p>
             </td>
           </tr>
 
@@ -130,16 +130,16 @@ async def send_verification_email(to: str, verify_url: str, full_name: Optional[
 <h1 style="font-size:24px;font-weight:800;color:#0f172a;margin:0 0 8px;">Confirmez votre adresse email 📬</h1>
 <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">Bonjour {name},</p>
 <p style="color:#475569;font-size:15px;line-height:1.7;margin:0;">
-  Bienvenue sur <strong>AgentFlow</strong> ! Votre compte est prêt.<br>
+  Bienvenue sur <strong>Agentoolflow</strong> ! Votre compte est prêt.<br>
   Il ne reste qu'une étape : confirmer votre adresse email pour activer toutes les fonctionnalités.
 </p>
 {_btn(verify_url, "Confirmer mon email →")}
-{_alert("Ce lien expire dans <strong>24 heures</strong>.<br>Si vous n'avez pas créé de compte AgentFlow, ignorez cet email.")}
+{_alert("Ce lien expire dans <strong>24 heures</strong>.<br>Si vous n'avez pas créé de compte Agentoolflow, ignorez cet email.")}
 <p style="color:#94a3b8;font-size:12px;margin:20px 0 0;line-height:1.6;">
   Vous ne pouvez pas cliquer sur le bouton ?<br>
   Copiez ce lien : <span style="color:#6366f1;word-break:break-all;">{verify_url}</span>
 </p>"""
-    await send_email(to, "Confirmez votre email — AgentFlow ⚡", _html_shell(content, "Activez votre compte AgentFlow en 1 clic"))
+    await send_email(to, "Confirmez votre email — Agentoolflow ⚡", _html_shell(content, "Activez votre compte Agentoolflow en 1 clic"))
 
 
 # ─────────────────────────────────────────────
@@ -152,7 +152,7 @@ async def send_reset_password_email(to: str, reset_url: str, full_name: Optional
 <h1 style="font-size:24px;font-weight:800;color:#0f172a;margin:0 0 8px;">Réinitialisation de mot de passe 🔑</h1>
 <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 4px;">Bonjour {name},</p>
 <p style="color:#475569;font-size:15px;line-height:1.7;margin:0;">
-  Vous avez demandé à réinitialiser votre mot de passe <strong>AgentFlow</strong>.<br>
+  Vous avez demandé à réinitialiser votre mot de passe <strong>Agentoolflow</strong>.<br>
   Cliquez ci-dessous pour en choisir un nouveau.
 </p>
 {_btn(reset_url, "Réinitialiser mon mot de passe →")}
@@ -160,7 +160,7 @@ async def send_reset_password_email(to: str, reset_url: str, full_name: Optional
 <p style="color:#94a3b8;font-size:12px;margin:20px 0 0;line-height:1.6;">
   Lien direct : <span style="color:#6366f1;word-break:break-all;">{reset_url}</span>
 </p>"""
-    await send_email(to, "Réinitialisation de mot de passe — AgentFlow", _html_shell(content, "Réinitialisez votre mot de passe AgentFlow"))
+    await send_email(to, "Réinitialisation de mot de passe — Agentoolflow", _html_shell(content, "Réinitialisez votre mot de passe Agentoolflow"))
 
 
 # ─────────────────────────────────────────────
@@ -168,11 +168,11 @@ async def send_reset_password_email(to: str, reset_url: str, full_name: Optional
 # ─────────────────────────────────────────────
 
 async def send_team_invitation_email(to: str, invite_url: str, team_name: str, inviter_name: Optional[str] = None) -> None:
-    inviter = inviter_name or "Un membre AgentFlow"
+    inviter = inviter_name or "Un membre Agentoolflow"
     content = f"""
 <h1 style="font-size:24px;font-weight:800;color:#0f172a;margin:0 0 8px;">Vous êtes invité à rejoindre une équipe 🤝</h1>
 <p style="color:#475569;font-size:15px;line-height:1.7;margin:0;">
-  <strong>{inviter}</strong> vous invite à rejoindre l'équipe <strong style="color:#4f46e5;">{team_name}</strong> sur AgentFlow Enterprise.<br>
+  <strong>{inviter}</strong> vous invite à rejoindre l'équipe <strong style="color:#4f46e5;">{team_name}</strong> sur Agentoolflow Enterprise.<br>
   En acceptant, vous accédez à tous les agents IA inclus dans le plan Enterprise.
 </p>
 {_btn(invite_url, "Rejoindre l'équipe →")}
@@ -181,4 +181,4 @@ async def send_team_invitation_email(to: str, invite_url: str, team_name: str, i
   Ce lien expire dans <strong>48 heures</strong>.<br>
   Si vous ne souhaitez pas rejoindre cette équipe, ignorez cet email.
 </p>"""
-    await send_email(to, f"Invitation — rejoignez l'équipe {team_name} sur AgentFlow ⚡", _html_shell(content, f"Invitation à rejoindre l'équipe {team_name}"))
+    await send_email(to, f"Invitation — rejoignez l'équipe {team_name} sur Agentoolflow ⚡", _html_shell(content, f"Invitation à rejoindre l'équipe {team_name}"))

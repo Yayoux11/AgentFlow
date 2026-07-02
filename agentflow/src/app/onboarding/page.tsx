@@ -82,7 +82,7 @@ export default function OnboardingPage() {
       <div className="flex items-center justify-between px-6 py-4 max-w-3xl mx-auto w-full">
         <div className="flex items-center gap-2 font-bold text-lg text-slate-900 dark:text-white">
           <span className="bg-indigo-600 text-white rounded-lg p-1.5"><Zap size={16} strokeWidth={2.5} /></span>
-          AgentFlow
+          Agentoolflow
         </div>
         <button onClick={skip} className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
           <X size={15} /> Passer l&apos;onboarding

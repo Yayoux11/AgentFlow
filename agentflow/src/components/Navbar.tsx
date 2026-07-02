@@ -82,7 +82,7 @@ export default function Navbar() {
                 <span className="bg-indigo-600 text-white rounded-lg p-1.5">
                   <Zap size={16} strokeWidth={2.5} />
                 </span>
-                AgentFlow
+                Agentoolflow
               </Link>
 
               <nav className="hidden md:flex items-center gap-1">

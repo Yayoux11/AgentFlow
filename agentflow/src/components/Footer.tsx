@@ -12,7 +12,7 @@ export default function Footer() {
               <span className="bg-indigo-600 text-white rounded-lg p-1.5">
                 <Zap size={16} strokeWidth={2.5} />
               </span>
-              AgentFlow
+              Agentoolflow
             </Link>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               La plateforme SaaS d&apos;agents IA pour automatiser votre activité.
@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-400 dark:text-slate-500">© 2026 AgentFlow. Tous droits réservés.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">© 2026 Agentoolflow. Tous droits réservés.</p>
           <div className="flex gap-6">
             {["Confidentialité", "CGU", "Cookies"].map((l) => (
               <span key={l} className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors">

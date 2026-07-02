@@ -23,7 +23,7 @@ const translations = {
     // ── Verify email ─────────────────────────────────────────────────────────
     "verify.loading": "Vérification en cours…",
     "verify.success_title": "Email vérifié !",
-    "verify.success_desc": "Votre compte est maintenant actif. Vous pouvez utiliser AgentFlow.",
+    "verify.success_desc": "Votre compte est maintenant actif. Vous pouvez utiliser Agentoolflow.",
     "verify.error_title": "Lien invalide",
     "verify.error_desc": "Ce lien est invalide ou a déjà été utilisé. Connectez-vous et renvoyez un nouveau lien.",
     "verify.go_dashboard": "Aller au dashboard",
@@ -43,7 +43,7 @@ const translations = {
     "section.trending": "Tendances",
     "section.popular": "Agents les plus populaires",
     "section.view_all": "Voir tout",
-    "section.why": "Pourquoi AgentFlow",
+    "section.why": "Pourquoi Agentoolflow",
     "section.all_you_need": "Tout ce dont vous avez besoin",
     "section.all_subtitle": "Une plateforme pensée pour les professionnels qui veulent l'efficacité de l'IA sans la complexité.",
     "section.how_it_works": "Comment ça marche",
@@ -122,7 +122,7 @@ const translations = {
     "footer.privacy": "Confidentialité",
     "footer.terms": "CGU",
     "footer.cookies": "Cookies",
-    "footer.copyright": "© 2026 AgentFlow. Tous droits réservés.",
+    "footer.copyright": "© 2026 Agentoolflow. Tous droits réservés.",
 
     // ── FAQ ───────────────────────────────────────────────────────────────────
     "faq.q1": "Est-ce que je peux annuler à tout moment ?",
@@ -138,7 +138,7 @@ const translations = {
 
     // ── Auth — Login ──────────────────────────────────────────────────────────
     "auth.login.title": "Bon retour !",
-    "auth.login.subtitle": "Connectez-vous à votre compte AgentFlow",
+    "auth.login.subtitle": "Connectez-vous à votre compte Agentoolflow",
     "auth.login.google": "Continuer avec Google",
     "auth.login.or": "ou",
     "auth.login.email": "Email",
@@ -318,7 +318,7 @@ const translations = {
 
     // ── API Keys ──────────────────────────────────────────────────────────────
     "apikey.title": "Clés API",
-    "apikey.subtitle": "Utilisez ces clés pour accéder à l'API AgentFlow depuis vos applications.",
+    "apikey.subtitle": "Utilisez ces clés pour accéder à l'API Agentoolflow depuis vos applications.",
     "apikey.new": "Nouvelle clé",
     "apikey.copy_now": "Copiez votre clé maintenant",
     "apikey.copy_warning": "Cette clé ne sera plus affichée après avoir quitté cette page.",
@@ -438,7 +438,7 @@ const translations = {
     // ── Verify email ─────────────────────────────────────────────────────────
     "verify.loading": "Verifying…",
     "verify.success_title": "Email verified!",
-    "verify.success_desc": "Your account is now active. You can start using AgentFlow.",
+    "verify.success_desc": "Your account is now active. You can start using Agentoolflow.",
     "verify.error_title": "Invalid link",
     "verify.error_desc": "This link is invalid or has already been used. Sign in and request a new one.",
     "verify.go_dashboard": "Go to dashboard",
@@ -458,7 +458,7 @@ const translations = {
     "section.trending": "Trending",
     "section.popular": "Most popular agents",
     "section.view_all": "View all",
-    "section.why": "Why AgentFlow",
+    "section.why": "Why Agentoolflow",
     "section.all_you_need": "Everything you need",
     "section.all_subtitle": "A platform built for professionals who want AI efficiency without the complexity.",
     "section.how_it_works": "How it works",
@@ -537,7 +537,7 @@ const translations = {
     "footer.privacy": "Privacy",
     "footer.terms": "Terms",
     "footer.cookies": "Cookies",
-    "footer.copyright": "© 2026 AgentFlow. All rights reserved.",
+    "footer.copyright": "© 2026 Agentoolflow. All rights reserved.",
 
     // ── FAQ ───────────────────────────────────────────────────────────────────
     "faq.q1": "Can I cancel at any time?",
@@ -553,7 +553,7 @@ const translations = {
 
     // ── Auth — Login ──────────────────────────────────────────────────────────
     "auth.login.title": "Welcome back!",
-    "auth.login.subtitle": "Sign in to your AgentFlow account",
+    "auth.login.subtitle": "Sign in to your Agentoolflow account",
     "auth.login.google": "Continue with Google",
     "auth.login.or": "or",
     "auth.login.email": "Email",
@@ -733,7 +733,7 @@ const translations = {
 
     // ── API Keys ──────────────────────────────────────────────────────────────
     "apikey.title": "API Keys",
-    "apikey.subtitle": "Use these keys to access the AgentFlow API from your applications.",
+    "apikey.subtitle": "Use these keys to access the Agentoolflow API from your applications.",
     "apikey.new": "New key",
     "apikey.copy_now": "Copy your key now",
     "apikey.copy_warning": "This key will not be shown again after leaving this page.",

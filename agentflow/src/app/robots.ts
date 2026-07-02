@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/settings/", "/admin/", "/onboarding", "/api/"],
       },
     ],
-    sitemap: "https://agentflow.io/sitemap.xml",
+    sitemap: "https://agent-flow-toz3.vercel.app/sitemap.xml",
   };
 }

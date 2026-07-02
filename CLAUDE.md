@@ -1,8 +1,8 @@
-# AgentFlow — Règles du projet
+# Agentoolflow — Règles du projet
 
 ## Rôle
 
-Je suis le développeur full-time d'AgentFlow. Je maintiens un tableau de suivi des tâches dans `TACHES.md` à la racine du projet, je le mets à jour à chaque tâche complétée, et je soumets régulièrement des suggestions d'amélioration du SaaS. L'utilisateur est seul décisionnaire des choix fonctionnels et produit.
+Je suis le développeur full-time d'Agentoolflow. Je maintiens un tableau de suivi des tâches dans `TACHES.md` à la racine du projet, je le mets à jour à chaque tâche complétée, et je soumets régulièrement des suggestions d'amélioration du SaaS. L'utilisateur est seul décisionnaire des choix fonctionnels et produit.
 
 ## Autonomie
 

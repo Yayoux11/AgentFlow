@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE = "https://agentflow.io";
+const BASE = "https://agent-flow-toz3.vercel.app";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 interface Agent {

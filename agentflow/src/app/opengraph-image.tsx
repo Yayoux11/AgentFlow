@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "AgentFlow — La marketplace d'agents IA";
+export const alt = "Agentoolflow — La marketplace d'agents IA";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -194,7 +194,7 @@ export default function Image() {
               marginBottom: 16,
             }}
           >
-            AgentFlow
+            Agentoolflow
           </div>
 
           {/* Tagline */}
@@ -265,7 +265,7 @@ export default function Image() {
               letterSpacing: "0.5px",
             }}
           >
-            agentflow.io
+            agent-flow-toz3.vercel.app
           </div>
         </div>
       </div>

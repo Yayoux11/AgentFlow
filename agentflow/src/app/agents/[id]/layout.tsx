@@ -1,0 +1,64 @@
+import type { Metadata } from "next";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+interface Agent {
+  name: string;
+  slug: string;
+  description: string;
+  long_description: string;
+  category: string;
+  icon: string;
+  tags: string[];
+  features: string[];
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id: slug } = await params;
+
+  try {
+    const agent: Agent = await fetch(`${API_URL}/agents/${slug}`, {
+      next: { revalidate: 3600 },
+    }).then((r) => {
+      if (!r.ok) throw new Error("not found");
+      return r.json();
+    });
+
+    const title = `${agent.icon} ${agent.name} — Agent IA`;
+    const description = agent.description;
+    const keywords = [agent.name, "agent IA", agent.category, ...agent.tags];
+    const url = `https://agentflow.io/agents/${slug}`;
+
+    return {
+      title,
+      description,
+      keywords,
+      alternates: { canonical: url },
+      openGraph: {
+        title: `${agent.name} — Agent IA | AgentFlow`,
+        description: agent.long_description || agent.description,
+        url,
+        type: "website",
+        images: [{ url: "/og.png", width: 1200, height: 630, alt: agent.name }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${agent.name} — Agent IA | AgentFlow`,
+        description: agent.description,
+      },
+    };
+  } catch {
+    return {
+      title: "Agent IA",
+      description: "Découvrez cet agent IA spécialisé sur AgentFlow.",
+    };
+  }
+}
+
+export default function AgentLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}

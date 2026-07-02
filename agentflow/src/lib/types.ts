@@ -20,6 +20,7 @@ export interface Agent {
   price_onetime: number;
   features: string[];
   tags: string[];
+  tools: string[];
   rating: number;
   reviews_count: number;
   is_active: boolean;

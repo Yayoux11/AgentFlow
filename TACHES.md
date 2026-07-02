@@ -51,6 +51,7 @@
 | 41 | **Pipeline ML** — Migration 008 (4 tables) + services embeddings/RAG/intent_router + routers knowledge & intent-routes + custom-prompts + 2 pages settings + api-client postForm/put | session 11 |
 | 42 | **Vrais agents (Phase 1-2-3)** — Multi-tours (conversation_id, chat UI bulles), Tool use (function calling Claude avec get_datetime/send_email/read_emails/search_kb), Triggers (webhook fire + scheduled runs CRUD) + migration 009 + settings/triggers page | session 12 |
 | 43 | **11 nouveaux agents + call_agent** — ImmoBot, JobSeeker, MotivAI, AutoSearch, FullStackAI, CyberGuard, LeadDev, ProjectPilot, ProductOwner, ScrumBot, TalentSearch + outil call_agent (connexions inter-agents avec guard profondeur 2) + guides d'utilisation | session 12 |
+| 44 | **Refonte front** — Navbar allégée (⚙️ icône → /settings, dropdown réduit à nom/email/logout), settings layout sidebar (Compte/Automatisation/Intelligence/Organisation), settings/page.tsx index, page agent avec 3 tabs : Chat (bulles multi-tours), Configuration (prompt custom, bases de connaissances, webhooks entrants), À propos (description, features, outils, stats, guide, exemples, agents liés) | session 13 |
 
 ---
 

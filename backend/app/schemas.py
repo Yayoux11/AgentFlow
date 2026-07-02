@@ -69,6 +69,7 @@ class AgentOut(BaseModel):
     price_onetime: float
     features: List[str]
     tags: List[str]
+    tools: List[str]
     rating: float
     reviews_count: int
     is_active: bool

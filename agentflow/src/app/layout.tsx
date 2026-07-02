@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     canonical: "https://agent-flow-toz3.vercel.app",
   },
   verification: {
-    google: "BJqscqUX9_j5O5RaTSk7QVDGYc2iaVk7ityH7FeU0I8",
+    google: "kHrtTxcrWNy1eTo541haA34nKx98RZa_iTvLvEaHqDk",
   },
 };
 

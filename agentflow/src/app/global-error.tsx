@@ -16,7 +16,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         <div style={{ textAlign: "center", maxWidth: 400, padding: "0 16px" }}>
           <p style={{ fontSize: 64, margin: "0 0 16px" }}>⚡</p>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>Erreur critique</h1>
-          <p style={{ color: "#64748b", fontSize: 14, marginBottom: 24 }}>Agentoolflow a rencontré un problème inattendu.</p>
+          <p style={{ color: "#64748b", fontSize: 14, marginBottom: 24 }}>AgenToolFlow a rencontré un problème inattendu.</p>
           <button
             onClick={reset}
             style={{ background: "#4f46e5", color: "white", border: "none", padding: "12px 24px", borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: "pointer" }}

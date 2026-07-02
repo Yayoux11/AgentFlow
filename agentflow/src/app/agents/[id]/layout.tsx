@@ -39,21 +39,21 @@ export async function generateMetadata({
       keywords,
       alternates: { canonical: url },
       openGraph: {
-        title: `${agent.name} — Agent IA | Agentoolflow`,
+        title: `${agent.name} — Agent IA | AgenToolFlow`,
         description: agent.long_description || agent.description,
         url,
         type: "website",
         },
       twitter: {
         card: "summary_large_image",
-        title: `${agent.name} — Agent IA | Agentoolflow`,
+        title: `${agent.name} — Agent IA | AgenToolFlow`,
         description: agent.description,
       },
     };
   } catch {
     return {
       title: "Agent IA",
-      description: "Découvrez cet agent IA spécialisé sur Agentoolflow.",
+      description: "Découvrez cet agent IA spécialisé sur AgenToolFlow.",
     };
   }
 }

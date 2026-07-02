@@ -20,7 +20,7 @@ const SECTIONS = [
         href: "/settings/api-keys",
         icon: Key,
         title: "Clés API",
-        description: "Générez des clés pour appeler l'API Agentoolflow depuis vos propres applications.",
+        description: "Générez des clés pour appeler l'API AgenToolFlow depuis vos propres applications.",
         color: "text-amber-600",
         bg: "bg-amber-50 dark:bg-amber-900/20",
       },

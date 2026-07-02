@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import HomePageClient from "@/components/HomePageClient";
 
 export const metadata: Metadata = {
-  title: "Agentoolflow — La marketplace d'agents IA",
+  title: "AgenToolFlow — La marketplace d'agents IA",
   description:
     "Découvrez, abonnez-vous et déployez des agents IA spécialisés. Automatisez vos tâches répétitives et boostez votre productivité dès aujourd'hui.",
   openGraph: {
-    title: "Agentoolflow — La marketplace d'agents IA",
+    title: "AgenToolFlow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés. Déployez en un clic, opérationnel en 2 minutes.",
     type: "website",
     locale: "fr_FR",
-    siteName: "Agentoolflow",
+    siteName: "AgenToolFlow",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Agentoolflow — La marketplace d'agents IA",
+    title: "AgenToolFlow — La marketplace d'agents IA",
     description: "50+ agents IA spécialisés. Déployez en un clic.",
   },
 };
@@ -25,7 +25,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": "https://agent-flow-toz3.vercel.app/#organization",
-      name: "Agentoolflow",
+      name: "AgenToolFlow",
       url: "https://agent-flow-toz3.vercel.app",
       logo: { "@type": "ImageObject", url: "https://agent-flow-toz3.vercel.app/og.png" },
       description: "La marketplace d'agents IA spécialisés pour automatiser les tâches d'entreprise.",
@@ -37,7 +37,7 @@ const jsonLd = {
       "@type": "WebSite",
       "@id": "https://agent-flow-toz3.vercel.app/#website",
       url: "https://agent-flow-toz3.vercel.app",
-      name: "Agentoolflow",
+      name: "AgenToolFlow",
       publisher: { "@id": "https://agent-flow-toz3.vercel.app/#organization" },
       potentialAction: {
         "@type": "SearchAction",
@@ -47,7 +47,7 @@ const jsonLd = {
     },
     {
       "@type": "SoftwareApplication",
-      name: "Agentoolflow",
+      name: "AgenToolFlow",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       offers: {

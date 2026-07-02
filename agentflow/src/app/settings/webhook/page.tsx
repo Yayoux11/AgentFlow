@@ -90,14 +90,14 @@ export default function WebhookSettingsPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">Webhook sortant</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les événements Agentoolflow dans votre propre système</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les événements AgenToolFlow dans votre propre système</p>
           </div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 mb-6">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">URL du webhook</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-            Agentoolflow enverra un POST JSON à cette URL après chaque exécution d&apos;agent ou traitement d&apos;email.
+            AgenToolFlow enverra un POST JSON à cette URL après chaque exécution d&apos;agent ou traitement d&apos;email.
           </p>
           <div className="flex gap-2">
             <input

@@ -1,4 +1,4 @@
-# Agentoolflow — Tableau de bord développement
+# AgenToolFlow — Tableau de bord développement
 
 > Mis à jour par le développeur après chaque tâche. L'utilisateur valide les priorités.
 
@@ -112,7 +112,7 @@ _(aucune tâche en cours)_
 | F3 | **Apple SSO** | Nécessite compte Apple Developer (99 $/an) |
 | F4 | **Agents personnalisés** (création par l'utilisateur via UI) | Complexité élevée, valeur différenciante à moyen terme |
 | F5 | **Marketplace tiers** (agents créés par la communauté) | Requiert modération, système de paiement aux créateurs |
-| F6 | **Domaine expéditeur Resend** — ajouter `agentflow.io` sur Resend (4 records DNS : DKIM, SPF MX, SPF TXT, DMARC) puis mettre `EMAIL_FROM=Agentoolflow <noreply@agentflow.io>` sur Render | Nécessite accès au registrar du domaine + vérification DNS (5-30 min propagation) — débloque l'envoi d'emails à n'importe quel utilisateur |
+| F6 | **Domaine expéditeur Resend** — ajouter `agentflow.io` sur Resend (4 records DNS : DKIM, SPF MX, SPF TXT, DMARC) puis mettre `EMAIL_FROM=AgenToolFlow <noreply@agentflow.io>` sur Render | Nécessite accès au registrar du domaine + vérification DNS (5-30 min propagation) — débloque l'envoi d'emails à n'importe quel utilisateur |
 
 ---
 

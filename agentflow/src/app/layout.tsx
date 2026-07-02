@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   metadataBase: new URL("https://agent-flow-toz3.vercel.app"),
   title: {
-    default: "Agentoolflow — La marketplace d'agents IA",
-    template: "%s | Agentoolflow",
+    default: "AgenToolFlow — La marketplace d'agents IA",
+    template: "%s | AgenToolFlow",
   },
   description:
     "Découvrez, abonnez-vous et déployez des agents IA spécialisés. Automatisez vos emails, recrutement, immobilier, dev et plus encore. Opérationnel en 2 minutes.",
@@ -25,25 +25,25 @@ export const metadata: Metadata = {
     "agent email IA", "agent recrutement IA", "agent immobilier IA", "ChatGPT entreprise",
     "automatisation entreprise", "SaaS IA France", "agent IA français",
   ],
-  authors: [{ name: "Agentoolflow" }],
-  creator: "Agentoolflow",
-  publisher: "Agentoolflow",
+  authors: [{ name: "AgenToolFlow" }],
+  creator: "AgenToolFlow",
+  publisher: "AgenToolFlow",
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   openGraph: {
-    title: "Agentoolflow — La marketplace d'agents IA",
+    title: "AgenToolFlow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés. Déployez en un clic, opérationnel en 2 minutes.",
     type: "website",
     locale: "fr_FR",
-    siteName: "Agentoolflow",
+    siteName: "AgenToolFlow",
     url: "https://agent-flow-toz3.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Agentoolflow — La marketplace d'agents IA",
+    title: "AgenToolFlow — La marketplace d'agents IA",
     description: "Automatisez vos tâches répétitives avec des agents IA spécialisés.",
   },
   alternates: {

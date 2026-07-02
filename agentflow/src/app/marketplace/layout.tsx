@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://agent-flow-toz3.vercel.app/marketplace" },
   openGraph: {
-    title: "Marketplace Agentoolflow — Tous nos agents IA",
+    title: "Marketplace AgenToolFlow — Tous nos agents IA",
     description: "Explorez et déployez des agents IA spécialisés pour chaque métier. Email, RH, immo, dev, finance…",
     url: "https://agent-flow-toz3.vercel.app/marketplace",
   },

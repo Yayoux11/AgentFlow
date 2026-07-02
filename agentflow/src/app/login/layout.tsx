@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Connexion",
-  description: "Connectez-vous à votre compte Agentoolflow pour accéder à vos agents IA.",
+  description: "Connectez-vous à votre compte AgenToolFlow pour accéder à vos agents IA.",
   robots: { index: false, follow: false },
 };
 

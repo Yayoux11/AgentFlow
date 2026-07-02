@@ -49,6 +49,7 @@
 | 39 | **Fix prod SSO** — google_sso_callback : auto-création EmailIntegration Gmail si refresh_token | session 11 |
 | 40 | **Fix marketplace** — seed_agents.py dans startCommand Render + agents correctement chargés depuis l'API | session 11 |
 | 41 | **Pipeline ML** — Migration 008 (4 tables) + services embeddings/RAG/intent_router + routers knowledge & intent-routes + custom-prompts + 2 pages settings + api-client postForm/put | session 11 |
+| 42 | **Vrais agents (Phase 1-2-3)** — Multi-tours (conversation_id, chat UI bulles), Tool use (function calling Claude avec get_datetime/send_email/read_emails/search_kb), Triggers (webhook fire + scheduled runs CRUD) + migration 009 + settings/triggers page | session 12 |
 
 ---
 
@@ -65,6 +66,8 @@ _(aucune tâche en cours)_
 | # | Tâche | Pourquoi |
 |---|-------|---------|
 | B2 | **Clé API Anthropic dans .env Render** | Les agents IA ne fonctionnent pas sans elle |
+| T1 | **APScheduler — exécution automatique des ScheduledRuns** | Les runs planifiés sont stockés mais pas encore exécutés automatiquement |
+| T2 | **DBeaver / accès visuel DB** | Render Free bloque l'accès externe — à faire si upgrade plan |
 
 ### 🟡 Améliorations produit
 

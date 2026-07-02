@@ -59,6 +59,7 @@ class Agent(Base):
     features: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     tags: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     system_prompt: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    tools: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     rating: Mapped[float] = mapped_column(Float, nullable=False, default=5.0)
     reviews_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -124,6 +125,7 @@ class AgentRequest(Base):
     response: Mapped[str] = mapped_column(Text, nullable=False)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    conversation_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid(as_uuid=True), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
 
     user: Mapped["User"] = relationship("User", back_populates="requests")
@@ -366,3 +368,43 @@ class AgentCustomPrompt(Base):
     agent_slug: Mapped[str] = mapped_column(String(100), nullable=False)
     system_prompt: Mapped[str] = mapped_column(Text, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+# ---------------------------------------------------------------------------
+# Webhook triggers (Phase 3)
+# ---------------------------------------------------------------------------
+
+class WebhookTrigger(Base):
+    __tablename__ = "webhook_triggers"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    agent_slug: Mapped[str] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    secret_token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_triggered_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship("User")
+
+
+# ---------------------------------------------------------------------------
+# Scheduled runs (Phase 3)
+# ---------------------------------------------------------------------------
+
+class ScheduledRun(Base):
+    __tablename__ = "scheduled_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    agent_slug: Mapped[str] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    cron_expression: Mapped[str] = mapped_column(String(100), nullable=False)
+    prompt_template: Mapped[str] = mapped_column(Text, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    last_run_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    next_run_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship("User")

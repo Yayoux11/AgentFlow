@@ -45,6 +45,36 @@ export interface AgentRunResponse {
   input_tokens: number;
   output_tokens: number;
   agent_name: string;
+  conversation_id: string;
+}
+
+export interface ConversationSummary {
+  conversation_id: string;
+  last_prompt: string;
+  message_count: number;
+  last_at: string;
+}
+
+export interface WebhookTrigger {
+  id: string;
+  agent_slug: string;
+  name: string;
+  secret_token: string;
+  is_active: boolean;
+  last_triggered_at: string | null;
+  created_at: string;
+}
+
+export interface ScheduledRun {
+  id: string;
+  agent_slug: string;
+  name: string;
+  cron_expression: string;
+  prompt_template: string;
+  is_active: boolean;
+  last_run_at: string | null;
+  next_run_at: string | null;
+  created_at: string;
 }
 
 export interface AdminStats {

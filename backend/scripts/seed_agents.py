@@ -45,8 +45,10 @@ AGENTS = [
             "- Start with a clear subject line suggestion formatted as [SUBJECT: ...]\n"
             "- Use proper email structure: greeting, body, call-to-action, closing\n"
             "- Offer a brief note at the end about tone adjustments if needed\n\n"
+            "You have access to tools: you can read the user's recent emails for context, and you can send emails directly if the user asks you to.\n\n"
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "read_recent_emails", "send_email"],
     },
     {
         "slug": "data-analyst",
@@ -76,9 +78,11 @@ AGENTS = [
             "- Provide 3-5 specific, actionable recommendations\n"
             "- Format your response as a structured report with sections:\n"
             "  ## Executive Summary\n  ## Key Findings\n  ## Anomalies\n  ## Recommendations\n\n"
+            "You can search the user's knowledge base to enrich your analysis with domain-specific context.\n\n"
             "Always be precise, use percentages and numbers, and back every insight with data. "
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
     {
         "slug": "social-manager",
@@ -113,6 +117,7 @@ AGENTS = [
             "- Offer 2-3 variations if the request is broad\n\n"
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
     {
         "slug": "support-bot",
@@ -147,6 +152,7 @@ AGENTS = [
             "Tone: Professional, friendly, helpful. "
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
     {
         "slug": "hr-recruiter",
@@ -180,6 +186,7 @@ AGENTS = [
             "Always flag any potential bias concerns. "
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "send_email", "search_knowledge_base"],
     },
     {
         "slug": "finance-tracker",
@@ -213,6 +220,7 @@ AGENTS = [
             "Flag risks explicitly with [RISK] markers. "
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
     {
         "slug": "code-reviewer",
@@ -247,6 +255,7 @@ AGENTS = [
             "Always provide corrected code snippets for critical issues. "
             "Be constructive and educational in your explanations."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
     {
         "slug": "seo-optimizer",
@@ -281,6 +290,7 @@ AGENTS = [
             "Always explain WHY each recommendation matters for rankings. "
             "Respond in the same language the user writes in."
         ),
+        "tools": ["get_current_datetime", "search_knowledge_base"],
     },
 ]
 

@@ -110,6 +110,7 @@ class AgentRunResponse(BaseModel):
     input_tokens: int
     output_tokens: int
     agent_name: str
+    conversation_id: uuid.UUID
 
 
 # ---------------------------------------------------------------------------
@@ -406,6 +407,66 @@ class AgentRunRequest(BaseModel):
     prompt: str = Field(min_length=1, max_length=8000)
     use_rag: bool = True
     use_routing: bool = True
+    conversation_id: Optional[uuid.UUID] = None
+
+
+# ---------------------------------------------------------------------------
+# Webhook triggers & scheduled runs (Phase 3)
+# ---------------------------------------------------------------------------
+
+class WebhookTriggerCreate(BaseModel):
+    agent_slug: str = Field(min_length=1, max_length=100)
+    name: str = Field(min_length=1, max_length=255)
+
+
+class WebhookTriggerOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    agent_slug: str
+    name: str
+    secret_token: str
+    is_active: bool
+    last_triggered_at: Optional[datetime]
+    created_at: datetime
+
+
+class ScheduledRunCreate(BaseModel):
+    agent_slug: str = Field(min_length=1, max_length=100)
+    name: str = Field(min_length=1, max_length=255)
+    cron_expression: str = Field(min_length=1, max_length=100)
+    prompt_template: str = Field(min_length=1)
+
+
+class ScheduledRunUpdate(BaseModel):
+    name: Optional[str] = None
+    prompt_template: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class ScheduledRunOut(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: uuid.UUID
+    agent_slug: str
+    name: str
+    cron_expression: str
+    prompt_template: str
+    is_active: bool
+    last_run_at: Optional[datetime]
+    next_run_at: Optional[datetime]
+    created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Conversation summary
+# ---------------------------------------------------------------------------
+
+class ConversationSummary(BaseModel):
+    conversation_id: uuid.UUID
+    last_prompt: str
+    message_count: int
+    last_at: datetime
 
 
 # ---------------------------------------------------------------------------

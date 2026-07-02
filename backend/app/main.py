@@ -10,6 +10,7 @@ from app.routers import admin, agents, auth, subscriptions, users, webhooks
 from app.routers import integrations, api_keys, notifications, outgoing_webhook, team
 from app.routers.knowledge import router as knowledge_router
 from app.routers.intent_routes import router as intent_routes_router, custom_router as custom_prompts_router
+from app.routers.triggers import router as triggers_router
 from app.workers.email_worker import start_scheduler, stop_scheduler
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ app.include_router(team.router)
 app.include_router(knowledge_router)
 app.include_router(intent_routes_router)
 app.include_router(custom_prompts_router)
+app.include_router(triggers_router)
 
 
 @app.get("/health")

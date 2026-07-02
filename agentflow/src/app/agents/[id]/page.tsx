@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, Check, Zap, BarChart3,
   Send, Loader2, AlertCircle, Lock,
   BookOpen, ChevronRight, History, ChevronDown,
-  Download, Printer,
+  Download, Printer, Plus, MessageSquare,
 } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import { useAuth } from "@/context/AuthContext";
-import type { Agent, AgentRunResponse } from "@/lib/types";
+import type { Agent, AgentRunResponse, ConversationSummary } from "@/lib/types";
 import { usageGuides } from "@/lib/usage-guides";
 import { useLang } from "@/context/LanguageContext";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  tokens?: number;
+}
 
 export default function AgentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: slug } = use(params);
@@ -25,11 +31,17 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
   const [related, setRelated] = useState<Agent[]>([]);
   const [fetching, setFetching] = useState(true);
 
-  // Run state (authenticated)
-  const [prompt, setPrompt] = useState("");
+  // Chat state (authenticated)
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [input, setInput] = useState("");
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<AgentRunResponse | null>(null);
   const [runError, setRunError] = useState("");
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  // Past conversations list
+  const [pastConversations, setPastConversations] = useState<ConversationSummary[]>([]);
+  const [pastOpen, setPastOpen] = useState(false);
 
   // Demo state (unauthenticated — B19)
   const DEMO_MAX = 3;
@@ -46,7 +58,7 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
 
   const [subscription, setSubscription] = useState<{ plan: string } | null>(null);
 
-  // History
+  // History (export only)
   interface HistoryItem { id: string; prompt: string; response: string; input_tokens: number; output_tokens: number; created_at: string; }
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -74,17 +86,59 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
       .finally(() => setFetching(false));
   }, [slug, router]);
 
+  useEffect(() => {
+    if (messages.length > 0) {
+      chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  function startNewConversation() {
+    setMessages([]);
+    setConversationId(null);
+    setRunError("");
+  }
+
+  async function loadPastConversations() {
+    if (!user || pastConversations.length > 0) { setPastOpen((v) => !v); return; }
+    setPastOpen(true);
+    try {
+      const data = await api.get<ConversationSummary[]>(`/agents/${slug}/conversations`);
+      setPastConversations(data);
+    } catch { /* ignore */ }
+  }
+
+  function resumeConversation(cid: string) {
+    setPastOpen(false);
+    setMessages([]);
+    setRunError("");
+    setConversationId(cid);
+    // History is carried server-side; user's next message will continue the thread
+  }
+
   async function handleRun(e: React.FormEvent) {
     e.preventDefault();
-    if (!prompt.trim()) return;
+    const text = input.trim();
+    if (!text) return;
     if (!user) { router.push("/login"); return; }
-    setRunning(true);
+
+    setInput("");
     setRunError("");
-    setResult(null);
+    setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setRunning(true);
+
     try {
-      const res = await api.post<AgentRunResponse>(`/agents/${slug}/run`, { prompt });
-      setResult(res);
+      const res = await api.post<AgentRunResponse>(`/agents/${slug}/run`, {
+        prompt: text,
+        ...(conversationId ? { conversation_id: conversationId } : {}),
+      });
+      setConversationId(res.conversation_id);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: res.response, tokens: res.input_tokens + res.output_tokens },
+      ]);
     } catch (err) {
+      setMessages((prev) => prev.slice(0, -1)); // remove optimistic user message
+      setInput(text); // restore input
       if (err instanceof ApiError) {
         if (err.status === 403) setRunError(t("agent.error.403"));
         else if (err.status === 429) setRunError(t("agent.error.429"));
@@ -332,56 +386,142 @@ export default function AgentPage({ params }: { params: Promise<{ id: string }> 
               </section>
             )}
 
-            {/* Try the agent */}
+            {/* Chat interface */}
             <section className="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-800 px-6 py-4">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("agent.try.title")}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                  {user ? t("agent.try.logged_in") : t("agent.try.logged_out")}
-                </p>
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-800 px-6 py-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("agent.try.title")}</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                    {user
+                      ? conversationId
+                        ? "Conversation en cours — posez votre prochain message"
+                        : t("agent.try.logged_in")
+                      : t("agent.try.logged_out")}
+                  </p>
+                </div>
+                {user && messages.length > 0 && (
+                  <button
+                    onClick={startNewConversation}
+                    className="inline-flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+                  >
+                    <Plus size={13} /> Nouvelle conversation
+                  </button>
+                )}
               </div>
-              <div className="p-6 bg-white dark:bg-slate-900">
+              <div className="bg-white dark:bg-slate-900">
                 {user ? (
-                  <form onSubmit={handleRun} className="space-y-4">
-                    <textarea
-                      id="prompt-textarea"
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      rows={4}
-                      placeholder={`Décrivez votre demande pour ${agent.name}…`}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
+                  <div className="flex flex-col">
+                    {/* Messages area */}
+                    {messages.length > 0 && (
+                      <div className="p-4 space-y-4 max-h-[500px] overflow-y-auto">
+                        {messages.map((msg, i) => (
+                          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                            {msg.role === "assistant" && (
+                              <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-sm mr-2 flex-shrink-0 mt-0.5">
+                                {agent.icon}
+                              </div>
+                            )}
+                            <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap
+                              ${msg.role === "user"
+                                ? "bg-indigo-600 text-white rounded-tr-sm"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
+                              }`}>
+                              {msg.content}
+                              {msg.role === "assistant" && msg.tokens && (
+                                <p className="text-xs opacity-50 mt-1.5">{msg.tokens} tokens</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {running && (
+                          <div className="flex justify-start">
+                            <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-sm mr-2 flex-shrink-0">
+                              {agent.icon}
+                            </div>
+                            <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1 items-center">
+                              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                            </div>
+                          </div>
+                        )}
+                        <div ref={chatBottomRef} />
+                      </div>
+                    )}
+
                     {runError && (
-                      <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
+                      <div className="mx-4 mb-3 flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
                         <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
                         <span>{runError}</span>
                       </div>
                     )}
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        disabled={running || !prompt.trim()}
-                        className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {running ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                        {running ? t("agent.try.sending") : t("agent.try.send")}
-                      </button>
-                    </div>
-                    {result && (
-                      <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg">{agent.icon}</span>
-                          <span className="text-sm font-semibold text-slate-900 dark:text-white">{agent.name}</span>
-                          <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">
-                            {result.input_tokens + result.output_tokens} {t("agent.try.tokens")}
-                          </span>
-                        </div>
-                        <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-                          {result.response}
-                        </div>
+
+                    {/* Input area */}
+                    <form onSubmit={handleRun} className="border-t border-slate-100 dark:border-slate-800 p-4">
+                      {messages.length === 0 && (
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
+                          Posez votre première question à {agent.name}
+                        </p>
+                      )}
+                      <div className="flex gap-2 items-end">
+                        <textarea
+                          id="prompt-textarea"
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              handleRun(e as unknown as React.FormEvent);
+                            }
+                          }}
+                          rows={3}
+                          placeholder={`Décrivez votre demande pour ${agent.name}… (Entrée pour envoyer)`}
+                          className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        />
+                        <button
+                          type="submit"
+                          disabled={running || !input.trim()}
+                          className="flex-shrink-0 inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {running ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Past conversations */}
+                    {user && (
+                      <div className="border-t border-slate-100 dark:border-slate-800">
+                        <button
+                          onClick={loadPastConversations}
+                          className="w-full flex items-center gap-2 px-4 py-3 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                        >
+                          <MessageSquare size={13} />
+                          <span>Conversations précédentes</span>
+                          <ChevronDown size={13} className={`ml-auto transition-transform ${pastOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {pastOpen && (
+                          <div className="border-t border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                            {pastConversations.length === 0 ? (
+                              <p className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500">Aucune conversation</p>
+                            ) : (
+                              pastConversations.map((conv) => (
+                                <button
+                                  key={conv.conversation_id}
+                                  onClick={() => resumeConversation(conv.conversation_id)}
+                                  className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                >
+                                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300 line-clamp-1">{conv.last_prompt}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                                    {conv.message_count} message{conv.message_count > 1 ? "s" : ""} · {new Date(conv.last_at).toLocaleDateString("fr-FR")}
+                                  </p>
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
-                  </form>
+                  </div>
                 ) : demoCount >= DEMO_MAX ? (
                   <div className="flex flex-col items-center py-10 gap-5 text-center">
                     <Lock size={40} className="text-indigo-300 dark:text-indigo-600" />

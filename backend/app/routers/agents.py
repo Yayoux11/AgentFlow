@@ -17,7 +17,8 @@ from app.services.notifications import create_notification
 from app.services.outgoing_webhook import send_webhook
 from app.services.rag import retrieve_context
 from app.services.intent_router import route_intent
-from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, MessageResponse
+from app.schemas import AgentCreate, AgentOut, AgentRunRequest, AgentRunResponse, AgentUpdate, ConversationItemOut, ConversationSummary, MessageResponse
+from app.services.tools import get_tools_for_agent, execute_tool, content_blocks_to_dicts, extract_text_from_blocks
 from app.models import User
 
 router = APIRouter(prefix="/agents", tags=["agents"])
@@ -127,7 +128,7 @@ async def demo_run_agent(slug: str, body: AgentRunRequest, db: AsyncSession = De
     if not settings.ANTHROPIC_API_KEY:
         return AgentRunResponse(
             response=f"[DEMO] {agent.name} a bien reçu votre demande. Configurez ANTHROPIC_API_KEY pour activer les vraies réponses IA.",
-            input_tokens=0, output_tokens=0, agent_name=agent.name,
+            input_tokens=0, output_tokens=0, agent_name=agent.name, conversation_id=uuid.uuid4(),
         )
 
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -142,6 +143,7 @@ async def demo_run_agent(slug: str, body: AgentRunRequest, db: AsyncSession = De
         input_tokens=message.usage.input_tokens,
         output_tokens=message.usage.output_tokens,
         agent_name=agent.name,
+        conversation_id=uuid.uuid4(),
     )
 
 
@@ -207,21 +209,66 @@ async def run_agent(
     if rag_context:
         user_message = f"Contexte documentaire :\n{rag_context}\n\n---\n\nQuestion : {body.prompt}"
 
-    # Call Claude
+    # Build conversation history for multi-turn memory
+    conversation_id = body.conversation_id or uuid.uuid4()
+    messages: list[dict] = []
+    if body.conversation_id:
+        history_result = await db.execute(
+            select(AgentRequest)
+            .where(
+                AgentRequest.conversation_id == conversation_id,
+                AgentRequest.user_id == current_user.id,
+            )
+            .order_by(AgentRequest.created_at.asc())
+            .limit(20)
+        )
+        for req in history_result.scalars().all():
+            messages.append({"role": "user", "content": req.prompt})
+            messages.append({"role": "assistant", "content": req.response})
+    messages.append({"role": "user", "content": user_message})
+
+    # Call Claude (with tool-use loop if agent has tools)
     if not settings.ANTHROPIC_API_KEY:
         ai_response = f"[STUB] Agent '{agent.name}' received: {body.prompt}\n\nThis is a simulated response. Configure ANTHROPIC_API_KEY to enable real AI responses."
         in_tokens, out_tokens = 0, 0
     else:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        message = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=2048,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_message}],
-        )
-        ai_response = message.content[0].text
-        in_tokens = message.usage.input_tokens
-        out_tokens = message.usage.output_tokens
+        agent_tools = get_tools_for_agent(agent.tools or [])
+        in_tokens, out_tokens = 0, 0
+
+        if agent_tools:
+            loop_messages = list(messages)
+            while True:
+                resp = client.messages.create(
+                    model="claude-sonnet-4-6",
+                    max_tokens=2048,
+                    system=system_prompt,
+                    messages=loop_messages,
+                    tools=agent_tools,
+                )
+                in_tokens += resp.usage.input_tokens
+                out_tokens += resp.usage.output_tokens
+                if resp.stop_reason == "tool_use":
+                    loop_messages.append({"role": "assistant", "content": content_blocks_to_dicts(resp.content)})
+                    tool_results = []
+                    for block in resp.content:
+                        if block.type == "tool_use":
+                            result_str = await execute_tool(block.name, block.input, current_user.id, agent.slug, db)
+                            tool_results.append({"type": "tool_result", "tool_use_id": block.id, "content": result_str})
+                    loop_messages.append({"role": "user", "content": tool_results})
+                else:
+                    ai_response = extract_text_from_blocks(resp.content)
+                    break
+        else:
+            resp = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=2048,
+                system=system_prompt,
+                messages=messages,
+            )
+            ai_response = resp.content[0].text
+            in_tokens = resp.usage.input_tokens
+            out_tokens = resp.usage.output_tokens
 
     # Quota warning at 80%
     if not current_user.is_superuser:
@@ -259,11 +306,67 @@ async def run_agent(
         response=ai_response,
         input_tokens=in_tokens,
         output_tokens=out_tokens,
+        conversation_id=conversation_id,
     )
     db.add(log)
     await _increment_usage(current_user.id, db)
 
-    return AgentRunResponse(response=ai_response, input_tokens=in_tokens, output_tokens=out_tokens, agent_name=agent.name)
+    return AgentRunResponse(
+        response=ai_response,
+        input_tokens=in_tokens,
+        output_tokens=out_tokens,
+        agent_name=agent.name,
+        conversation_id=conversation_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# List conversations for an agent (multi-turn)
+# ---------------------------------------------------------------------------
+
+@router.get("/{slug}/conversations", response_model=List[ConversationSummary])
+async def list_conversations(
+    slug: str,
+    limit: int = Query(20, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Agent).where(Agent.slug == slug, Agent.is_active == True))
+    agent = result.scalar_one_or_none()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+
+    rows_result = await db.execute(
+        select(AgentRequest)
+        .where(
+            AgentRequest.user_id == current_user.id,
+            AgentRequest.agent_id == agent.id,
+            AgentRequest.conversation_id.is_not(None),
+        )
+        .order_by(AgentRequest.created_at.desc())
+        .limit(200)
+    )
+    rows = rows_result.scalars().all()
+
+    # Group by conversation_id, keep latest
+    seen: dict[uuid.UUID, dict] = {}
+    for row in rows:
+        cid = row.conversation_id
+        if cid not in seen:
+            seen[cid] = {"last_at": row.created_at, "last_prompt": row.prompt, "count": 1}
+        else:
+            seen[cid]["count"] += 1
+
+    summaries = [
+        ConversationSummary(
+            conversation_id=cid,
+            last_prompt=data["last_prompt"],
+            message_count=data["count"],
+            last_at=data["last_at"],
+        )
+        for cid, data in sorted(seen.items(), key=lambda x: x[1]["last_at"], reverse=True)
+    ]
+    return summaries[:limit]
 
 
 # ---------------------------------------------------------------------------
